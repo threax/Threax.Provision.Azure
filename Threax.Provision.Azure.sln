@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Threax.Provision.AzCli", "Threax.Provision.AzCli\Threax.Provision.AzCli.csproj", "{222AD9B4-4755-4010-977A-0DFB8413DF23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Threax.Provision.AzCli.Tests", "Threax.Provision.AzCli.Tests\Threax.Provision.AzCli.Tests.csproj", "{4A4DD61A-7AF6-4895-A95E-D5194D0086C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Threax.Provision.AzCli.Tests", "Threax.Provision.AzCli.Tests\Threax.Provision.AzCli.Tests.csproj", "{4A4DD61A-7AF6-4895-A95E-D5194D0086C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Threax.Provision.Azure.Core", "Threax.Provision.Azure.Core\Threax.Provision.Azure.Core.csproj", "{FDC61C30-B4BE-43FD-8DD4-0CAF1CE8B1B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{4A4DD61A-7AF6-4895-A95E-D5194D0086C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A4DD61A-7AF6-4895-A95E-D5194D0086C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A4DD61A-7AF6-4895-A95E-D5194D0086C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDC61C30-B4BE-43FD-8DD4-0CAF1CE8B1B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDC61C30-B4BE-43FD-8DD4-0CAF1CE8B1B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDC61C30-B4BE-43FD-8DD4-0CAF1CE8B1B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDC61C30-B4BE-43FD-8DD4-0CAF1CE8B1B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
