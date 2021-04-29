@@ -3,6 +3,7 @@ using System;
 using Threax.AspNetCore.Tests;
 using Xunit;
 using Threax.Provision.AzCli.Managers;
+using Xunit.Abstractions;
 
 namespace Threax.Provision.AzCli.Tests
 {
@@ -10,10 +11,9 @@ namespace Threax.Provision.AzCli.Tests
     {
         Mockup mockup = new Mockup();
 
-        public AccountManagerTests()
+        public AccountManagerTests(ITestOutputHelper output)
         {
-            mockup.MockServiceCollection.AddLogging();
-            mockup.MockServiceCollection.AddThreaxProvisionAzCli();
+            mockup.AddCommonMockups(output);
         }
 
         [Fact]

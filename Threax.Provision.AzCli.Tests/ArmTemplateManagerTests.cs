@@ -24,19 +24,7 @@ namespace Threax.Provision.AzCli.Tests
 
         public ArmTemplateManagerTests(ITestOutputHelper output)
         {
-            mockup.MockServiceCollection.AddThreaxPwshShellRunner(o =>
-            {
-                o.IncludeLogOutput = false;
-                o.DecorateProcessRunner = r => new SpyProcessRunner(r)
-                {
-                    Events = new ProcessEvents()
-                    {
-                        ErrorDataReceived = (o, e) => { if (e.Data != null) output.WriteLine(e.Data); },
-                        OutputDataReceived = (o, e) => { if (e.Data != null) output.WriteLine(e.Data); },
-                    }
-                };
-            });
-            mockup.MockServiceCollection.AddThreaxProvisionAzCli();
+            mockup.AddCommonMockups(output);
         }
 
         [Fact

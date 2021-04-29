@@ -6,9 +6,9 @@ namespace Threax.Provision.AzCli.Managers
 {
     class AccountManager : IAccountManager
     {
-        private readonly IShellRunner<SilentRunner> powershellCoreRunner;
+        private readonly IShellRunner powershellCoreRunner;
 
-        public AccountManager(IShellRunner<SilentRunner> powershellCoreRunner)
+        public AccountManager(IShellRunner powershellCoreRunner)
         {
             this.powershellCoreRunner = powershellCoreRunner;
         }
