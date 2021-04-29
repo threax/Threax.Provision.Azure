@@ -20,4 +20,19 @@
     <ProjectReference Include="..\Threax.Provision.AzCli\Threax.Provision.AzCli.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="ArmTemplates\KeyVaultTemplate\parameters.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ArmTemplates\KeyVaultTemplate\template.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ArmTemplates\ResourceGroupTemplate\parameters.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ArmTemplates\ResourceGroupTemplate\template.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

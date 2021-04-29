@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Threax.Provision.AzCli
 {
-    class VerboseRunnerType
+    class SilentRunner
     {
     }
 }

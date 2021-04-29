@@ -14,12 +14,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var options = new ThreaxAzCliOptions();
             configure?.Invoke(options);
 
-            services.AddThreaxPwshProcessHelper<VerboseRunnerType>(o =>
-            {
-                o.IncludeLogOutput = true;
-            });
-
             services.TryAddScoped<IAccountManager, AccountManager>();
+            services.TryAddScoped<IArmTemplateManager, ArmTemplateManager>();
 
             return services;
         }

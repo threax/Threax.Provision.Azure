@@ -1,14 +1,14 @@
 ﻿using System;
-using Threax.ProcessHelper.Pwsh;
+using Threax.ProcessHelper;
 using Threax.Provision.AzCli.Models;
 
 namespace Threax.Provision.AzCli.Managers
 {
     class AccountManager : IAccountManager
     {
-        private readonly IPowershellCoreRunner<VerboseRunnerType> powershellCoreRunner;
+        private readonly IShellRunner<SilentRunner> powershellCoreRunner;
 
-        public AccountManager(IPowershellCoreRunner<VerboseRunnerType> powershellCoreRunner)
+        public AccountManager(IShellRunner<SilentRunner> powershellCoreRunner)
         {
             this.powershellCoreRunner = powershellCoreRunner;
         }
