@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Threax.AspNetCore.Tests;
 using Threax.ProcessHelper;
 using Threax.Provision.AzCli.Managers;
+using Threax.Provision.AzCli.Tests.ArmTemplates.KeyVaultTemplate;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -67,7 +68,7 @@ namespace Threax.Provision.AzCli.Tests
             manager.ResourceGroupDeployment(TestRg, 
                 "ArmTemplates/KeyVaultTemplate/template.json", 
                 "ArmTemplates/KeyVaultTemplate/parameters.json",
-                new { tenant = "" });
+                new { tenant = Config.Tenant });
         }
 
         [Fact
@@ -81,7 +82,18 @@ namespace Threax.Provision.AzCli.Tests
             manager.ResourceGroupDeployment(TestOverrideRg,
                 "ArmTemplates/KeyVaultTemplate/template.json",
                 "ArmTemplates/KeyVaultTemplate/parameters.json", 
-                new { name = "threax-prov-override-kv", tenant = "" });
+                new { name = "threax-prov-override-kv", tenant = Config.Tenant });
+        }
+
+        [Fact
+#if !ENABLE_ARM_TESTS
+         (Skip = "Arm Tests Disabled")
+#endif
+        ]
+        public void DeployKeyVaultObj()
+        {
+            var manager = mockup.Get<IArmTemplateManager>();
+            manager.ResourceGroupDeployment(TestRg, new ArmKeyVault("threax-kv-obj", TestLoc, Config.Tenant));
         }
     }
 }
