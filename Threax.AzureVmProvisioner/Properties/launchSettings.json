@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "Threax.AzureVmProvisioner": {
+      "commandName": "Project"
+    },
+    "Create": {
+      "commandName": "Project",
+      "commandLineArgs": "Create $(ProjectDir)/Example/simple.json"
+    }
+  }
+}

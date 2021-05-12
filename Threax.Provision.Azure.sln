@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Threax.Provision.AzPowershe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Threax.Provision.AzPowershell.Tests", "Threax.Provision.AzPowershell.Tests\Threax.Provision.AzPowershell.Tests.csproj", "{39BD7A50-29F8-454E-9E39-3DE6700F64B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Threax.AzureVmProvisioner", "Threax.AzureVmProvisioner\Threax.AzureVmProvisioner.csproj", "{16263871-65D1-413A-B7CB-D8921353BB47}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{39BD7A50-29F8-454E-9E39-3DE6700F64B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39BD7A50-29F8-454E-9E39-3DE6700F64B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39BD7A50-29F8-454E-9E39-3DE6700F64B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16263871-65D1-413A-B7CB-D8921353BB47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16263871-65D1-413A-B7CB-D8921353BB47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16263871-65D1-413A-B7CB-D8921353BB47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16263871-65D1-413A-B7CB-D8921353BB47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
