@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.ArmTemplates.ResourceGroup;
 using Threax.Provision.AzPowershell;
 
@@ -8,15 +9,22 @@ namespace Threax.AzureVmProvisioner.Controller.CreateCommon
     {
         private readonly IArmTemplateManager armTemplateManager;
         private readonly EnvironmentConfiguration config;
+        private readonly ILogger<CreateCommonResourceGroup> logger;
 
-        public CreateCommonResourceGroup(IArmTemplateManager armTemplateManager, EnvironmentConfiguration config)
+        public CreateCommonResourceGroup(
+            IArmTemplateManager armTemplateManager, 
+            EnvironmentConfiguration config,
+            ILogger<CreateCommonResourceGroup> logger)
         {
             this.armTemplateManager = armTemplateManager;
             this.config = config;
+            this.logger = logger;
         }
 
         public async Task Execute()
         {
+            logger.LogInformation($"Creating resource group '{config.ResourceGroup}'.");
+
             var armResourceGroup = new ArmResourceGroup(config.ResourceGroup);
             await armTemplateManager.SubscriptionDeployment(config.Location, armResourceGroup);
         }

@@ -1,13 +1,16 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Controller;
+using Threax.AzureVmProvisioner.Controller.CreateCommon;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.ConsoleApp;
 using Threax.Extensions.Configuration.SchemaBinder;
+using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -52,10 +55,37 @@ namespace Threax.AzureVmProvisioner
 
                 services.AddLogging(o =>
                 {
-                    o.AddConsole();
+                    o.AddConsole().AddSimpleConsole(co =>
+                    {
+                        co.IncludeScopes = false;
+                        co.SingleLine = true;
+                    });
                 });
 
-                services.AddThreaxPwshShellRunner();
+                services.AddThreaxPwshShellRunner(o =>
+                {
+                    //o.IncludeLogOutput = false;
+                    //o.DecorateProcessRunner = r => new SpyProcessRunner(r)
+                    //{
+                    //    Events = new ProcessEvents()
+                    //    {
+                    //        ErrorDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) Console.WriteLine(e.DataReceivedEventArgs.Data); },
+                    //        OutputDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) Console.WriteLine(e.DataReceivedEventArgs.Data); },
+                    //    }
+                    //};
+                });
+
+                services.AddThreaxProvisionAzPowershell();
+
+                services.AddScoped<IStringGenerator, StringGenerator>();
+                services.AddScoped<ICredentialLookup, CredentialLookup>();
+                services.AddScoped<IVmCommands, VmCommands>();
+                services.AddScoped<ISshCredsManager, SshCredsManager>();
+
+                services.AddScoped<CreateCommonCompute>();
+                services.AddScoped<CreateCommonKeyVault>();
+                services.AddScoped<CreateCommonResourceGroup>();
+                services.AddScoped<CreateCommonSqlDatabase>();
             })
             .Run(c => c.Run());
         }

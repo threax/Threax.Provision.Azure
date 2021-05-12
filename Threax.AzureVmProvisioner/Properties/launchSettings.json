@@ -3,9 +3,9 @@
     "Threax.AzureVmProvisioner": {
       "commandName": "Project"
     },
-    "Create": {
+    "CreateCommon": {
       "commandName": "Project",
-      "commandLineArgs": "Create $(ProjectDir)/Example/simple.json"
+      "commandLineArgs": "CreateCommon $(ProjectDir)/Example/env.json"
     }
   }
 }

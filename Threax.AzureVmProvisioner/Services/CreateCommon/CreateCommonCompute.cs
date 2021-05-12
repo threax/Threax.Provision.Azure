@@ -46,21 +46,29 @@ namespace Threax.AzureVmProvisioner.Controller.CreateCommon
             this.sshCredsManager = sshCredsManager;
         }
 
-        public async Task Execute(Compute resource)
+        public async Task Execute()
         {
+            logger.LogInformation("Creating common compute resources.");
+
             if (await this.acrManager.IsNameAvailable(config.AcrName))
             {
+                logger.LogInformation($"Creating ACR '{config.AcrName}'.");
+
                 await this.acrManager.Create(config.AcrName, config.ResourceGroup, config.Location, "Basic");
             }
             else
             {
+                logger.LogInformation($"Find existing acr '{config.AcrName}'.");
+
                 //This will fail if this acr isn't under our control
                 await this.acrManager.GetAcr(config.AcrName, config.ResourceGroup);
             }
 
+            logger.LogInformation($"Get acr credentials '{config.AcrName}'.");
             var acrCreds = await acrManager.GetAcrCredential(config.AcrName, config.ResourceGroup);
 
             //Setup Vm
+            logger.LogInformation($"Setup vm credentials in key vault '{config.VmName}'.");
             await keyVaultAccessManager.Unlock(config.InfraKeyVaultName, config.UserId);
             var vmCreds = await credentialLookup.GetOrCreateCredentials(config.InfraKeyVaultName, config.VmAdminBaseKey);
 

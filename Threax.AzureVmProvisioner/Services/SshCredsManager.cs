@@ -167,7 +167,10 @@ namespace Threax.AzureVmProvisioner.Services
             do
             {
                 logger.LogInformation($"Trying key scan connection to '{sshHost}'. Retry '{retry}'.");
-                key = shellRunner.RunProcess<String>($"ssh-keyscan -t rsa {sshHost}");
+                var builder = shellRunner.CreateCommandBuilder();
+                builder.AddCommand($"$key = ssh-keyscan -t rsa {sshHost}");
+                builder.AddResultCommand($"$key");
+                key = shellRunner.RunProcess<String>(builder);
 
                 if (++retry > 100)
                 {
