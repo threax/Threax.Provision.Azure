@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Controller;
-using Threax.AzureVmProvisioner.Controller.CreateCommon;
+using Threax.AzureVmProvisioner.Services.CreateCommon;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.ConsoleApp;

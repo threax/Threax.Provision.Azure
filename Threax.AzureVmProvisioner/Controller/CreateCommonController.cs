@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Threax.AzureVmProvisioner.Controller.CreateCommon;
+using Threax.AzureVmProvisioner.Services.CreateCommon;
 
 namespace Threax.AzureVmProvisioner.Controller
 {

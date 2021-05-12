@@ -4,7 +4,7 @@ using Threax.AzureVmProvisioner.ArmTemplates.KeyVault;
 using Threax.AzureVmProvisioner.Resources;
 using Microsoft.Extensions.Logging;
 
-namespace Threax.AzureVmProvisioner.Controller.CreateCommon
+namespace Threax.AzureVmProvisioner.Services.CreateCommon
 {
     class CreateCommonKeyVault
     {

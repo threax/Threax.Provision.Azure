@@ -7,7 +7,7 @@ using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Controller.CreateCommon
+namespace Threax.AzureVmProvisioner.Services.CreateCommon
 {
     class CreateCommonCompute
     {

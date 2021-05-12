@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.ArmTemplates.ResourceGroup;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Controller.CreateCommon
+namespace Threax.AzureVmProvisioner.Services.CreateCommon
 {
     class CreateCommonResourceGroup
     {

@@ -10,7 +10,7 @@ using Threax.Provision;
 using Threax.Provision.AzPowershell;
 using Microsoft.Extensions.Logging;
 
-namespace Threax.AzureVmProvisioner.Controller.CreateCommon
+namespace Threax.AzureVmProvisioner.Services.CreateCommon
 {
     class CreateCommonSqlDatabase
     {
