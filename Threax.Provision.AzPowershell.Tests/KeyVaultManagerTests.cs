@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Threax.Provision.AzPowershell.Tests
 {
-    public class KeyVaultManagerTests
+    public class KeyVaultManagerTests : IDisposable
     {
         const string TestVault = "threax-prov-kv";
         const string TestRg = "threax-prov-rg";
@@ -27,6 +27,11 @@ namespace Threax.Provision.AzPowershell.Tests
         {
             mockup.AddCommonMockups(output);
             config = mockup.Get<Config>();
+        }
+
+        public void Dispose()
+        {
+            mockup.Dispose();
         }
 
         [Fact
