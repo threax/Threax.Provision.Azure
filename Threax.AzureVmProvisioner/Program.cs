@@ -9,6 +9,7 @@ using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.AzureVmProvisioner.Workers;
 using Threax.ConsoleApp;
+using Threax.DockerBuildConfig;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -18,6 +19,7 @@ namespace Threax.AzureVmProvisioner
         private const String ResourcesSectionName = "Resources";
         private const String KeyVaultSectionName = "KeyVault";
         private const String StorageSectionName = "Storage";
+        private const String BuildSectionName = "Build";
 
         public static Task<int> Main(string[] args)
         {
@@ -67,6 +69,20 @@ namespace Threax.AzureVmProvisioner
                     var config = configBinder.SharedConfigInstance[StorageSectionName]?.ToObject<AzureStorageConfig>()
                         ?? new AzureStorageConfig();
                     return config;
+                });
+
+                services.AddSingleton<BuildConfig>(s =>
+                {
+                    var pathHelper = s.GetRequiredService<IPathHelper>();
+                    var configBinder = s.GetRequiredService<IConfigLoader>();
+                    var result = new BuildConfig(pathHelper.ConfigPath);
+                    var config = configBinder.SharedConfigInstance[BuildSectionName];
+                    if (config != null)
+                    {
+                        using var reader = config.CreateReader();
+                        Newtonsoft.Json.JsonSerializer.CreateDefault().Populate(reader, result);
+                    }
+                    return result;
                 });
 
                 services.AddHttpClient();

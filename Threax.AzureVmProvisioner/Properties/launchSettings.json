@@ -10,6 +10,14 @@
     "Create Id": {
       "commandName": "Project",
       "commandLineArgs": "Create $(ProjectDir)/Example/id/appsettings.json"
+    },
+    "Clone Id": {
+      "commandName": "Project",
+      "commandLineArgs": "Clone $(ProjectDir)/Example/id/appsettings.json"
+    },
+    "Build Id": {
+      "commandName": "Project",
+      "commandLineArgs": "Build $(ProjectDir)/Example/id/appsettings.json"
     }
   }
 }
