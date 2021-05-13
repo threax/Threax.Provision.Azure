@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Threax.Extensions.Configuration.SchemaBinder" Version="2.0.1" />
     <PackageReference Include="Threax.Azure.Abstractions" Version="1.2.0" />
-    <PackageReference Include="Threax.ConsoleApp" Version="2.0.0-pre01" />
+    <PackageReference Include="Threax.ConsoleApp" Version="2.0.0" />
   </ItemGroup>
 
   <ItemGroup>
