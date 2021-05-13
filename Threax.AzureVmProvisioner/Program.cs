@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
+using Threax.AzureVmProvisioner.Workers;
 using Threax.ConsoleApp;
 
 namespace Threax.AzureVmProvisioner
@@ -76,8 +78,24 @@ namespace Threax.AzureVmProvisioner
                 services.AddScoped<ICredentialLookup, CredentialLookup>();
                 services.AddScoped<IVmCommands, VmCommands>();
                 services.AddScoped<ISshCredsManager, SshCredsManager>();
+
+                RegisterWorkers(services, typeof(Program).Assembly);
             })
             .Run(c => c.Run());
+        }
+
+        private static void RegisterWorkers(IServiceCollection services, Assembly assembly)
+        {
+            var genericWorkerType = typeof(IWorker<>);
+
+            foreach(var type in assembly.GetTypes())
+            {
+                var concreteType = genericWorkerType.MakeGenericType(type);
+                if (concreteType.IsAssignableFrom(type) && type != concreteType)
+                {
+                    services.AddScoped(concreteType, type);
+                }
+            }
         }
     }
 }
