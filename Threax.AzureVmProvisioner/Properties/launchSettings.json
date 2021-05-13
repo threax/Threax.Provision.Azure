@@ -7,6 +7,10 @@
       "commandName": "Project",
       "commandLineArgs": "CreateCommon $(ProjectDir)/Example/env.json"
     },
+    "LoginAcr": {
+      "commandName": "Project",
+      "commandLineArgs": "LoginAcr $(ProjectDir)/Example/env.json"
+    },
     "Create Id": {
       "commandName": "Project",
       "commandLineArgs": "Create $(ProjectDir)/Example/id/appsettings.json"
