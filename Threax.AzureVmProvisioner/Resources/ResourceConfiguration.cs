@@ -17,6 +17,11 @@ namespace Threax.AzureVmProvisioner.Resources
         /// <summary>
         /// Settings for an app's sql database.
         /// </summary>
-        public SqlDatabase SqlDatabase { get; internal set; }
+        public SqlDatabase SqlDatabase { get; set; }
+
+        /// <summary>
+        /// Settings for an app's storage.
+        /// </summary>
+        public Storage Storage { get; set; }
     }
 }

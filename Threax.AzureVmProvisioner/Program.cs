@@ -17,6 +17,7 @@ namespace Threax.AzureVmProvisioner
         private const String EnvironmentSectionName = "Environment";
         private const String ResourcesSectionName = "Resources";
         private const String KeyVaultSectionName = "KeyVault";
+        private const String StorageSectionName = "Storage";
 
         public static Task<int> Main(string[] args)
         {
@@ -57,6 +58,14 @@ namespace Threax.AzureVmProvisioner
                     var configBinder = s.GetRequiredService<IConfigLoader>();
                     var config = configBinder.SharedConfigInstance[KeyVaultSectionName]?.ToObject<AzureKeyVaultConfig>()
                         ?? new AzureKeyVaultConfig();
+                    return config;
+                });
+
+                services.AddSingleton<AzureStorageConfig>(s =>
+                {
+                    var configBinder = s.GetRequiredService<IConfigLoader>();
+                    var config = configBinder.SharedConfigInstance[StorageSectionName]?.ToObject<AzureStorageConfig>()
+                        ?? new AzureStorageConfig();
                     return config;
                 });
 
