@@ -2,9 +2,9 @@
 {
     interface IPathHelper
     {
-        string Path { get; }
+        string ConfigPath { get; }
 
-        string Directory { get; }
+        string ConfigDirectory { get; }
         string UserSshFolder { get; }
         string AppUserFolder { get; }
 

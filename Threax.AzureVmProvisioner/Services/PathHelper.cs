@@ -9,17 +9,17 @@ namespace Threax.AzureVmProvisioner.Services
     {
         public PathHelper(String baseFile)
         {
-            Path = baseFile = System.IO.Path.GetFullPath(baseFile);
-            this.Directory = System.IO.Path.GetDirectoryName(baseFile);
+            ConfigPath = baseFile = Path.GetFullPath(baseFile);
+            this.ConfigDirectory = Path.GetDirectoryName(baseFile);
         }
 
-        public String Path { get; }
+        public String ConfigPath { get; }
 
-        public String Directory { get; }
+        public String ConfigDirectory { get; }
 
-        public String AppUserFolder => System.IO.Path.Combine(GetUserHomePath(), ".threaxprovision");
+        public String AppUserFolder => Path.Combine(GetUserHomePath(), ".threaxprovision");
 
-        public String UserSshFolder => System.IO.Path.Combine(GetUserHomePath(), ".ssh");
+        public String UserSshFolder => Path.Combine(GetUserHomePath(), ".ssh");
 
         /// <summary>
         /// Get a temporary file path in the user's ~/.threaxprovision/temp folder.
@@ -27,13 +27,13 @@ namespace Threax.AzureVmProvisioner.Services
         /// <returns></returns>
         public String GetTempProvisionPath()
         {
-            var tempFolder = System.IO.Path.Combine(AppUserFolder, "temp");
-            if (!System.IO.Directory.Exists(tempFolder))
+            var tempFolder = Path.Combine(AppUserFolder, "temp");
+            if (!Directory.Exists(tempFolder))
             {
-                System.IO.Directory.CreateDirectory(tempFolder);
+                Directory.CreateDirectory(tempFolder);
             }
 
-            return System.IO.Path.Combine(tempFolder, Guid.NewGuid().ToString());
+            return Path.Combine(tempFolder, Guid.NewGuid().ToString());
         }
 
         private String GetUserHomePath()

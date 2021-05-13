@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
@@ -15,6 +16,7 @@ namespace Threax.AzureVmProvisioner
     {
         private const String EnvironmentSectionName = "Environment";
         private const String ResourcesSectionName = "Resources";
+        private const String KeyVaultSectionName = "KeyVault";
 
         public static Task<int> Main(string[] args)
         {
@@ -31,7 +33,7 @@ namespace Threax.AzureVmProvisioner
                 services.AddSingleton<IConfigLoader>(s =>
                 {
                     var pathHelper = s.GetRequiredService<IPathHelper>();
-                    return new ConfigLoader(pathHelper.Path);
+                    return new ConfigLoader(pathHelper.ConfigPath);
                 });
 
                 services.AddSingleton<EnvironmentConfiguration>(s =>
@@ -47,6 +49,14 @@ namespace Threax.AzureVmProvisioner
                     var configBinder = s.GetRequiredService<IConfigLoader>();
                     var config = configBinder.SharedConfigInstance[ResourcesSectionName]?.ToObject<ResourceConfiguration>()
                         ?? throw new InvalidOperationException($"No '{ResourcesSectionName}' property defined.");
+                    return config;
+                });
+
+                services.AddSingleton<AzureKeyVaultConfig>(s =>
+                {
+                    var configBinder = s.GetRequiredService<IConfigLoader>();
+                    var config = configBinder.SharedConfigInstance[KeyVaultSectionName]?.ToObject<AzureKeyVaultConfig>()
+                        ?? new AzureKeyVaultConfig();
                     return config;
                 });
 

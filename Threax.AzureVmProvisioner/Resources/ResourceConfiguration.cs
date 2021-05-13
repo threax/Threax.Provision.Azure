@@ -13,5 +13,10 @@ namespace Threax.AzureVmProvisioner.Resources
         /// The configuration for the compute the resource runs on.
         /// </summary>
         public Compute Compute { get; set; }
+
+        /// <summary>
+        /// Settings for an app's sql database.
+        /// </summary>
+        public SqlDatabase SqlDatabase { get; internal set; }
     }
 }

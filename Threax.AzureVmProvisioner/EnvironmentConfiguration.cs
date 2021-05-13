@@ -9,9 +9,20 @@ namespace Threax.AzureVmProvisioner
     /// </summary>
     class EnvironmentConfiguration
     {
+        /// <summary>
+        /// The location of the resources.
+        /// </summary>
         public String Location { get; set; }
 
+        /// <summary>
+        /// The resource group to create resources in.
+        /// </summary>
         public String ResourceGroup { get; set; }
+
+        /// <summary>
+        /// The current subscription id.
+        /// </summary>
+        public string SubscriptionId { get; set; }
 
         /// <summary>
         /// The Active Directory TenantId
