@@ -47,6 +47,8 @@ namespace Threax.AzureVmProvisioner.Workers
             var existingCert = await keyVaultManager.GetCertificate(azureKeyVaultConfig.VaultName, resource.Name);
             if (existingCert == null)
             {
+                logger.LogInformation($"No existing certificate '{resource.Name}' creating a new one.");
+
                 using (var rsa = RSA.Create()) // generate asymmetric key pair
                 {
                     var request = new CertificateRequest($"cn={resource.CN}", rsa, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
@@ -65,6 +67,10 @@ namespace Threax.AzureVmProvisioner.Workers
                     }
                     await keyVaultManager.ImportCertificate(azureKeyVaultConfig.VaultName, resource.Name, certBytes, password);
                 }
+            }
+            else
+            {
+                logger.LogInformation($"Found existing certificate '{resource.Name}' making no changes.");
             }
         }
     }

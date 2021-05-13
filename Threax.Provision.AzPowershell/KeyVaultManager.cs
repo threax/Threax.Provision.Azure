@@ -151,7 +151,12 @@ namespace Threax.Provision.AzPowershell
                 invalidExitCodeMessage: $"Error getting certificate '{Name}' from Key Vault '{VaultName}'.");
 
             return info != null ?
-                new VaultCertificate(info.KeyId, info.SecretId, info.Thumbprint) : null;
+                new VaultCertificate
+                {
+                    KeyId = info.KeyId,
+                    SecretId = info.SecretId,
+                    Thumbprint = info.Thumbprint
+                } : null;
         }
     }
 }
