@@ -18,6 +18,10 @@
     "Build Id": {
       "commandName": "Project",
       "commandLineArgs": "Build $(ProjectDir)/Example/id/appsettings.json"
+    },
+    "Deploy Id": {
+      "commandName": "Project",
+      "commandLineArgs": "Deploy $(ProjectDir)/Example/id/appsettings.json"
     }
   }
 }
