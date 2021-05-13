@@ -7,7 +7,7 @@ namespace Threax.AzureVmProvisioner.Controller
     record CreateCommonController
     (
         ILogger<CreateCommonController> logger,
-        EnvironmentConfiguration config,
+        IWorker<RunInfoLogger> runInfoLogger,
         IWorker<CreateResourceGroup> createResourceGroup,
         IWorker<CreateInfraKeyVault> createInfraKeyVault,
         IWorker<CreateVM> createVm,
@@ -19,6 +19,7 @@ namespace Threax.AzureVmProvisioner.Controller
         {
             logger.LogInformation("Creating common resources.");
 
+            await runInfoLogger.ExecuteAsync();
             await createResourceGroup.ExecuteAsync();
             await createInfraKeyVault.ExecuteAsync();
             await createVm.ExecuteAsync();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ namespace Threax.AzureVmProvisioner.Workers
 {
     record CreateAppCertificate
     (
+        ILogger<CreateAppCertificate> logger,
         IStringGenerator stringGenerator, 
         IKeyVaultManager keyVaultManager, 
         EnvironmentConfiguration config, 
@@ -27,6 +29,8 @@ namespace Threax.AzureVmProvisioner.Workers
             {
                 return;
             }
+
+            logger.LogInformation($"Processing app certificate for '{resource.Name}'");
 
             if (String.IsNullOrEmpty(resource.Name))
             {

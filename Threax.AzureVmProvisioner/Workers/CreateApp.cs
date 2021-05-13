@@ -36,12 +36,16 @@ namespace Threax.AzureVmProvisioner.Workers
                 return;
             }
 
+            logger.LogInformation($"Processing app compute for '{resource.Name}'");
+
             //Update app permissions in key vault
             if (!string.IsNullOrEmpty(azureKeyVaultConfig.VaultName))
             {
+                var spName = $"{resource.Name}-app";
+                logger.LogInformation($"Managing service principal '{spName}'.");
+
                 await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
 
-                var spName = $"{resource.Name}-app";
                 if (!await servicePrincipalManager.Exists(spName))
                 {
                     await CreateServicePrincipal(spName);

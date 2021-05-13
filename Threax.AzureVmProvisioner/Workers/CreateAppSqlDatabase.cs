@@ -34,6 +34,8 @@ namespace Threax.AzureVmProvisioner.Workers
                 return;
             }
 
+            logger.LogInformation($"Processing sql database credentials for '{resource.Name}'");
+
             var readerKeyBase = $"threaxpipe-{resource.Name}-readwrite" ?? throw new InvalidOperationException($"You must include a '{nameof(SqlDatabase.Name)}' property on '{nameof(SqlDatabase)}' types.");
             var ownerKeyBase = $"threaxpipe-{resource.Name}-owner";
 
