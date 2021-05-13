@@ -1,16 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Controller;
-using Threax.AzureVmProvisioner.Services.CreateCommon;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.ConsoleApp;
-using Threax.Extensions.Configuration.SchemaBinder;
-using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -81,11 +76,6 @@ namespace Threax.AzureVmProvisioner
                 services.AddScoped<ICredentialLookup, CredentialLookup>();
                 services.AddScoped<IVmCommands, VmCommands>();
                 services.AddScoped<ISshCredsManager, SshCredsManager>();
-
-                services.AddScoped<CreateCommonCompute>();
-                services.AddScoped<CreateCommonKeyVault>();
-                services.AddScoped<CreateCommonResourceGroup>();
-                services.AddScoped<CreateCommonSqlDatabase>();
             })
             .Run(c => c.Run());
         }
