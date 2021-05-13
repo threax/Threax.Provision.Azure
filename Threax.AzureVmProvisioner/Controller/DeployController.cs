@@ -43,14 +43,14 @@ namespace Threax.AzureVmProvisioner.Controller
             var image = buildConfig.ImageName;
             var currentTag = buildConfig.GetCurrentTag();
             var taggedImageName = imageManager.FindLatestImage(image, buildConfig.BaseTag, currentTag);
-            var branchTag = $"{image}:{buildConfig.Branch}";
+            var finalTag = $"{config.AcrName.ToLowerInvariant()}.azurecr.io/{image}:{buildConfig.Branch}";
 
             //Push
             logger.LogInformation($"Pushing '{image}' for branch '{buildConfig.Branch}'.");
 
-            shellRunner.RunProcessVoid($"docker tag {taggedImageName} {branchTag}", invalidExitCodeMessage: "An error occured during the docker tag.");
+            shellRunner.RunProcessVoid($"docker tag {taggedImageName} {finalTag}", invalidExitCodeMessage: "An error occured during the docker tag.");
 
-            shellRunner.RunProcessVoid($"docker push {branchTag}", invalidExitCodeMessage: "An error occured during the docker push.");
+            shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
 
             //Deploy
             logger.LogInformation($"Deploying '{image}' for branch '{buildConfig.Branch}'.");
@@ -62,7 +62,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 deploy = new JObject();
                 jobj["Deploy"] = deploy;
             }
-            deploy["ImageName"] = branchTag;
+            deploy["ImageName"] = finalTag;
 
             var fileName = Path.GetFileName(pathHelper.ConfigPath);
             var configJson = jobj.ToString(Newtonsoft.Json.Formatting.Indented);
