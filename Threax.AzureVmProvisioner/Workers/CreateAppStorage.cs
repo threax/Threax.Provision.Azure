@@ -26,6 +26,11 @@ namespace Threax.AzureVmProvisioner.Workers
         {
             var resource = resources.Storage;
 
+            if(resource == null)
+            {
+                return;
+            }
+
             var nameCheck = azureStorageConfig.StorageAccount ?? throw new InvalidOperationException("You must provide a name for storage resources.");
 
             var storage = new ArmStorageAccount(azureStorageConfig.StorageAccount, config.Location);

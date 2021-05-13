@@ -9,6 +9,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     record CreateController
     (
+        IWorker<CreateAppCertificate> CreateAppCertificate,
         IWorker<CreateApp> CreateApp,
         IWorker<CreateAppVault> CreateAppVault,
         IWorker<CreateAppSqlDatabase> CreateAppSqlDatabase,
@@ -22,6 +23,7 @@ namespace Threax.AzureVmProvisioner.Controller
             await CreateApp.ExecuteAsync();
             await CreateAppSqlDatabase.ExecuteAsync();
             await CreateAppStorage.ExecuteAsync();
+            await CreateAppCertificate.ExecuteAsync();
         }
     }
 }

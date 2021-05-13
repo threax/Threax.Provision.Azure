@@ -69,6 +69,7 @@ namespace Threax.AzureVmProvisioner
                     return config;
                 });
 
+                services.AddHttpClient();
                 services.AddLogging(o =>
                 {
                     o.AddConsole().AddSimpleConsole(co =>
@@ -93,6 +94,7 @@ namespace Threax.AzureVmProvisioner
 
                 services.AddThreaxProvisionAzPowershell();
 
+                services.AddScoped<IMachineIpManager, MachineIpManager>();
                 services.AddScoped<IStringGenerator, StringGenerator>();
                 services.AddScoped<ICredentialLookup, CredentialLookup>();
                 services.AddScoped<IVmCommands, VmCommands>();

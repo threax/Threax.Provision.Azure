@@ -13,6 +13,7 @@ namespace Threax.AzureVmProvisioner.Services
     {
         private readonly HttpClient httpClient;
         private readonly ILogger<MachineIpManager> logger;
+        private String ip;
 
         public MachineIpManager(HttpClient httpClient, ILogger<MachineIpManager> logger)
         {
@@ -22,17 +23,22 @@ namespace Threax.AzureVmProvisioner.Services
 
         public async Task<String> GetExternalIp()
         {
-            var ipInfoHost = "http://ipinfo.io/json";
-            using (var result = await httpClient.GetAsync(ipInfoHost))
+            if (ip == null)
             {
-                if (!result.IsSuccessStatusCode)
+                var ipInfoHost = "http://ipinfo.io/json";
+                using (var result = await httpClient.GetAsync(ipInfoHost))
                 {
-                    throw new InvalidOperationException($"Could not get public ip from '{ipInfoHost}'.");
+                    if (!result.IsSuccessStatusCode)
+                    {
+                        throw new InvalidOperationException($"Could not get public ip from '{ipInfoHost}'.");
+                    }
+                    var json = await result.Content.ReadAsStringAsync();
+                    var jobj = JObject.Parse(json);
+                    ip = jobj["ip"]?.ToString();
                 }
-                var json = await result.Content.ReadAsStringAsync();
-                var jobj = JObject.Parse(json);
-                return jobj["ip"]?.ToString();
             }
+
+            return ip;
         }
     }
 }

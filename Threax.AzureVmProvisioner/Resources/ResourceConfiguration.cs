@@ -23,5 +23,10 @@ namespace Threax.AzureVmProvisioner.Resources
         /// Settings for an app's storage.
         /// </summary>
         public Storage Storage { get; set; }
+
+        /// <summary>
+        /// Configuration for an app's certificate.
+        /// </summary>
+        public Certificate Certificate { get; set; }
     }
 }
