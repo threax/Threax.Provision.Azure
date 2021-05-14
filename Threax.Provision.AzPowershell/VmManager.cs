@@ -19,7 +19,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Network");
-            pwsh.AddResultCommand($"Get-AzPublicIpAddress -Name {Name}");
+            pwsh.AddResultCommand($"Get-AzPublicIpAddress -Name {Name} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                invalidExitCodeMessage: $"Error getting Public Ip Address '{Name}'.");
@@ -37,7 +37,7 @@ namespace Threax.Provision.AzPowershell
                 pwsh.AddCommand($"Import-Module Az.Network");
                 pwsh.AddCommand($"$nsg = Get-AzNetworkSecurityGroup -Name {NetworkSecurityGroup} -ResourceGroup {ResourceGroup}");
                 pwsh.AddCommand($"($nsg.SecurityRules | Where-Object {{$_.Name -eq {Name}}}).Access = {Access}");
-                pwsh.AddResultCommand($"$nsg | Set-AzNetworkSecurityGroup");
+                pwsh.AddResultCommand($"$nsg | Set-AzNetworkSecurityGroup | ConvertTo-Json -Depth 10");
 
                 return shellRunner.RunProcessVoidAsync(pwsh,
                     invalidExitCodeMessage: $"Error modifying NSG '{NetworkSecurityGroup}' from '{ResourceGroup}'.");

@@ -23,7 +23,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.ApplicationInsights");
-            pwsh.AddResultCommand($"Get-AzApplicationInsights -Name {Name} -ResourceGroupName {ResourceGroupName}");
+            pwsh.AddResultCommand($"Get-AzApplicationInsights -Name {Name} -ResourceGroupName {ResourceGroupName} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                invalidExitCodeMessage: $"Error getting App Insights instrumentation key for '{Name}' in Resource Group '{ResourceGroupName}'.");

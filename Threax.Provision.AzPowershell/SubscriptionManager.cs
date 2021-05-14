@@ -19,7 +19,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Accounts");
-            pwsh.AddResultCommand($"Set-AzContext -SubscriptionId {subscriptionId}");
+            pwsh.AddResultCommand($"Set-AzContext -SubscriptionId {subscriptionId} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error setting context to '{subscriptionId}'.");

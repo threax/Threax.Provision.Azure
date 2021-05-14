@@ -21,7 +21,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.AddCommand($"Import-Module Az.Sql");
             pwsh.AddCommand($"$secStringPassword = ConvertTo-SecureString {adminPass} -AsPlainText");
             pwsh.AddCommand($"$credObject = New-Object System.Management.Automation.PSCredential ({adminUser}, $secStringPassword)");
-            pwsh.AddResultCommand($"New-AzSqlServer -ServerName {name} -SqlAdministratorCredentials $credObject -Location {location} -ResourceGroupName {resourceGroupName}");
+            pwsh.AddResultCommand($"New-AzSqlServer -ServerName {name} -SqlAdministratorCredentials $credObject -Location {location} -ResourceGroupName {resourceGroupName} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error creating Sql Server '{name}' in Resource Group '{resourceGroupName}' at '{location}'.");
@@ -33,7 +33,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Sql");
-            pwsh.AddResultCommand($"New-AzSqlServerFirewallRule -FirewallRuleName {name} -StartIpAddress {startIp} -EndIpAddress {endIp} -ServerName {serverName} -ResourceGroupName {resourceGroupName}");
+            pwsh.AddResultCommand($"New-AzSqlServerFirewallRule -FirewallRuleName {name} -StartIpAddress {startIp} -EndIpAddress {endIp} -ServerName {serverName} -ResourceGroupName {resourceGroupName} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error setting firewall rule for '{name}' on server {serverName}.");
@@ -45,7 +45,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Sql");
-            pwsh.AddResultCommand($"Remove-AzSqlServerFirewallRule -FirewallRuleName {name} -ServerName {serverName} -ResourceGroupName {resourceGroupName}");
+            pwsh.AddResultCommand($"Remove-AzSqlServerFirewallRule -FirewallRuleName {name} -ServerName {serverName} -ResourceGroupName {resourceGroupName} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error removing firewall rule for '{name}' on server {serverName}.");

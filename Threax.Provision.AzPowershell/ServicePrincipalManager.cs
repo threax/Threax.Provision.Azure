@@ -19,7 +19,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Resources");
-            pwsh.AddResultCommand($"Get-AzADServicePrincipal -DisplayName {DisplayName}");
+            pwsh.AddResultCommand($"Get-AzADServicePrincipal -DisplayName {DisplayName} | ConvertTo-Json -Depth 10");
 
             var result = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error getting service principal '{DisplayName}'.");
@@ -34,7 +34,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Resources");
             pwsh.AddCommand($"Remove-AzADServicePrincipal -Force -DisplayName {DisplayName}");
-            pwsh.AddResultCommand($"Remove-AzADApplication -Force -DisplayName {DisplayName}");
+            pwsh.AddResultCommand($"Remove-AzADApplication -Force -DisplayName {DisplayName} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error getting service principal '{DisplayName}'.");
@@ -50,7 +50,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.AddCommand($"$info = New-AzADServicePrincipal -DisplayName {displayName} -Role {role} -Scope {scope}");
             pwsh.AddCommand($"if($info -eq $null){{ throw }}");
             pwsh.AddCommand($"$secret = ConvertFrom-SecureString -SecureString $info.Secret -AsPlainText");
-            pwsh.AddResultCommand($"@{{Secret = $secret;Id = $info.Id;ApplicationId = $info.ApplicationId;DisplayName = $info.DisplayName;}}");
+            pwsh.AddResultCommand($"@{{Secret = $secret;Id = $info.Id;ApplicationId = $info.ApplicationId;DisplayName = $info.DisplayName;}} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error creating service principal '{displayName}' in Scope '{scope}' with role '{role}'.");

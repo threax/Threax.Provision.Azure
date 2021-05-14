@@ -19,7 +19,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.Storage");
-            pwsh.AddResultCommand($"Get-AzStorageAccountKey -AccountName {AccountName} -ResourceGroupName {ResourceGroupName}");
+            pwsh.AddResultCommand($"Get-AzStorageAccountKey -AccountName {AccountName} -ResourceGroupName {ResourceGroupName} | ConvertTo-Json -Depth 10");
 
             var error = $"Error getting storage account key for '{AccountName}' in Resource Group '{ResourceGroupName}'.";
 

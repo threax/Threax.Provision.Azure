@@ -10,7 +10,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     record CreateController
     (
-        ILogger<CreateCommonController> logger,
+        ILogger<CreateController> logger,
         IWorker<RunInfoLogger> runInfoLogger,
         IWorker<CreateAppCertificate> CreateAppCertificate,
         IWorker<CreateApp> CreateApp,

@@ -26,7 +26,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
-            pwsh.AddResultCommand($"Set-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName} -PermissionsToSecrets set,delete,get,list -PermissionsToCertificates import,delete,get,list");
+            pwsh.AddResultCommand($"Set-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName} -PermissionsToSecrets set,delete,get,list -PermissionsToCertificates import,delete,get,list | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error unlocking secrets in Key Vault '{keyVaultName}'.");
@@ -44,7 +44,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
-            pwsh.AddResultCommand($"Set-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName} -PermissionsToSecrets get,list -PermissionsToCertificates get,list");
+            pwsh.AddResultCommand($"Set-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName} -PermissionsToSecrets get,list -PermissionsToCertificates get,list | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error unlocking secrets in Key Vault '{keyVaultName}'.");
@@ -56,7 +56,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
-            pwsh.AddResultCommand($"Remove-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName}");
+            pwsh.AddResultCommand($"Remove-AzKeyVaultAccessPolicy -ObjectId {userId} -VaultName {keyVaultName} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error unlocking secrets in Key Vault '{keyVaultName}'.");
@@ -69,7 +69,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
             pwsh.AddCommand($"$secret = ConvertTo-SecureString {value} -AsPlainText -Force");
-            pwsh.AddResultCommand($"Set-AzKeyVaultSecret -VaultName {keyVaultName} -Name {name} -SecretValue $secret");
+            pwsh.AddResultCommand($"Set-AzKeyVaultSecret -VaultName {keyVaultName} -Name {name} -SecretValue $secret | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                invalidExitCodeMessage: $"Error setting secret '{name}' in Key Vault '{keyVaultName}'.");
@@ -84,7 +84,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.AddCommand($"$secret = Get-AzKeyVaultSecret -VaultName {keyVaultName} -Name {name}");
             pwsh.AddCommand($"$final = $null");
             pwsh.AddCommand($"if($secret -ne $null) {{ $final = ConvertFrom-SecureString -SecureString $secret.SecretValue -AsPlainText }}");
-            pwsh.AddResultCommand($"$final");
+            pwsh.AddResultCommand($"$final | ConvertTo-Json -Depth 10");
 
             dynamic info = await shellRunner.RunProcessAsync(pwsh,
                invalidExitCodeMessage: $"Error loading '{name}' from Key Vault '{keyVaultName}'.");
@@ -98,7 +98,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
-            pwsh.AddResultCommand($"Get-AzKeyVault -VaultName {VaultName}");
+            pwsh.AddResultCommand($"Get-AzKeyVault -VaultName {VaultName} | ConvertTo-Json -Depth 10");
 
             dynamic info = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error finding key vault '{VaultName}'.");
@@ -113,7 +113,7 @@ namespace Threax.Provision.AzPowershell
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
             pwsh.AddCommand($"$securePass = ConvertTo-SecureString {Password} -AsPlainText -Force");
-            pwsh.AddResultCommand($"Import-AzKeyVaultCertificate -VaultName {VaultName} -Name {Name} -FilePath {FilePath} -Password $securePass");
+            pwsh.AddResultCommand($"Import-AzKeyVaultCertificate -VaultName {VaultName} -Name {Name} -FilePath {FilePath} -Password $securePass | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                invalidExitCodeMessage: $"Error Importing Certificate '{Name}' to Key Vault '{VaultName}'.");
@@ -145,7 +145,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.KeyVault");
-            pwsh.AddResultCommand($"Get-AzKeyVaultCertificate -VaultName {VaultName} -Name {Name}");
+            pwsh.AddResultCommand($"Get-AzKeyVaultCertificate -VaultName {VaultName} -Name {Name} | ConvertTo-Json -Depth 10");
 
             dynamic info = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error getting certificate '{Name}' from Key Vault '{VaultName}'.");

@@ -23,7 +23,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.ContainerRegistry");
-            pwsh.AddResultCommand($"New-AzContainerRegistry -EnableAdminUser -Name {Name} -ResourceGroupName {ResourceGroupName} -Location {Location} -Sku {Sku}");
+            pwsh.AddResultCommand($"New-AzContainerRegistry -EnableAdminUser -Name {Name} -ResourceGroupName {ResourceGroupName} -Location {Location} -Sku {Sku} | ConvertTo-Json -Depth 10");
 
             return shellRunner.RunProcessVoidAsync(pwsh,
                 invalidExitCodeMessage: $"Error creating Azure Container Registry '{Name}' in Resource Group '{ResourceGroupName}' in '{Location}' with sku '{Sku}'.");
@@ -35,7 +35,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.ContainerRegistry");
-            pwsh.AddResultCommand($"Test-AzContainerRegistryNameAvailability -Name {Name}");
+            pwsh.AddResultCommand($"Test-AzContainerRegistryNameAvailability -Name {Name} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error testing Azure Container Registry name availability for '{Name}'.");
@@ -49,7 +49,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.ContainerRegistry");
-            pwsh.AddResultCommand($"Get-AzContainerRegistry -Name {Name} -ResourceGroupName {ResourceGroupName}");
+            pwsh.AddResultCommand($"Get-AzContainerRegistry -Name {Name} -ResourceGroupName {ResourceGroupName} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error getting Azure Container Registry '{Name}' in Resource Group '{ResourceGroupName}'.");
@@ -62,7 +62,7 @@ namespace Threax.Provision.AzPowershell
 
             pwsh.SetUnrestrictedExecution();
             pwsh.AddCommand($"Import-Module Az.ContainerRegistry");
-            pwsh.AddResultCommand($"Get-AzContainerRegistryCredential -Name {Name} -ResourceGroupName {ResourceGroupName}");
+            pwsh.AddResultCommand($"Get-AzContainerRegistryCredential -Name {Name} -ResourceGroupName {ResourceGroupName} | ConvertTo-Json -Depth 10");
 
             dynamic result = await shellRunner.RunProcessAsync(pwsh,
                 invalidExitCodeMessage: $"Error getting Azure Container Registry '{Name}' in Resource Group '{ResourceGroupName}'.");
