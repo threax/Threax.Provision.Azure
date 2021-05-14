@@ -28,7 +28,7 @@ namespace Threax.AzureVmProvisioner.Controller
             var tag1 = $"{image}:{buildTag}";
             var tag2 = $"{image}:{currentTag}";
 
-            List<FormattableString> command = new List<FormattableString>(){ $"$env:DOCKER_BUILDKIT=1; docker build {context} -f {dockerFile} -t {tag1} -t {tag2} --progress=plain" };
+            List<FormattableString> command = new List<FormattableString>(){ $"docker build {context} -f {dockerFile} -t {tag1} -t {tag2} --progress=plain" };
 
             if (buildConfig.PullAllImages)
             {
