@@ -14,7 +14,7 @@ namespace Threax.Provision.AzPowershell.Tests
     {
         public static Mockup AddCommonMockups(this Mockup mockup, ITestOutputHelper output)
         {
-            mockup.MockServiceCollection.AddThreaxPwshShellRunner(o =>
+            mockup.MockServiceCollection.AddThreaxProcessHelper(o =>
             {
                 o.IncludeLogOutput = false;
                 o.DecorateProcessRunner = r => new SpyProcessRunner(r)
@@ -26,6 +26,7 @@ namespace Threax.Provision.AzPowershell.Tests
                     }
                 };
             });
+            mockup.MockServiceCollection.AddThreaxPwshShellRunner();
 
             mockup.MockServiceCollection.AddSingleton<Config>(s =>
             {

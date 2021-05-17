@@ -108,6 +108,7 @@ namespace Threax.AzureVmProvisioner
                     //};
                 });
 
+                services.AddThreaxProcessHelper();
                 services.AddThreaxProvisionAzPowershell();
 
                 services.AddScoped<IMachineIpManager, MachineIpManager>();
