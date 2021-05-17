@@ -19,8 +19,8 @@ namespace Threax.Provision.AzCli.Tests
                 {
                     Events = new ProcessEvents()
                     {
-                        ErrorDataReceived = (o, e) => { if (e.Data != null) output.WriteLine(e.Data); },
-                        OutputDataReceived = (o, e) => { if (e.Data != null) output.WriteLine(e.Data); },
+                        ErrorDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) output.WriteLine(e.DataReceivedEventArgs.Data); },
+                        OutputDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) output.WriteLine(e.DataReceivedEventArgs.Data); },
                     }
                 };
             });
