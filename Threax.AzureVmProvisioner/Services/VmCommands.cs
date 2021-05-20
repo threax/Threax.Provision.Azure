@@ -44,7 +44,7 @@ namespace Threax.AzureVmProvisioner.Services
                     throw new InvalidOperationException($"Error moving the file.");
                 }
 
-                exitCode = await sshCredsManager.RunSshCommand($"sudo Threax.DockerTools run {file}");
+                exitCode = await sshCredsManager.RunSshCommand($"sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools run {file}");
                 if (exitCode != 0)
                 {
                     throw new InvalidOperationException($"Error during docker tools run.");
@@ -62,7 +62,7 @@ namespace Threax.AzureVmProvisioner.Services
         public async Task ThreaxDockerToolsExec(String file, String command, params String[] args)
         {
             var expanded = args.Length > 0 ? $"\"{String.Join("\", \"", args)}\"" : null;
-            var exitCode = await sshCredsManager.RunSshCommand($"sudo Threax.DockerTools \"exec\" \"{file}\" \"{command}\" {expanded}");
+            var exitCode = await sshCredsManager.RunSshCommand($"sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools \"exec\" \"{file}\" \"{command}\" {expanded}");
             if (exitCode != 0)
             {
                 throw new InvalidOperationException("Error running exec.");
@@ -144,7 +144,7 @@ namespace Threax.AzureVmProvisioner.Services
 
                 //Copy Secret
                 await sshCredsManager.CopySshFile(source, tempPath);
-                var exitCode = await sshCredsManager.RunSshCommand($"sudo Threax.DockerTools SetSecret \"{settingsDest}\" \"{name}\" \"{tempPath}\"");
+                var exitCode = await sshCredsManager.RunSshCommand($"sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools SetSecret \"{settingsDest}\" \"{name}\" \"{tempPath}\"");
                 if (exitCode != 0)
                 {
                     throw new InvalidOperationException("Error setting secret.");

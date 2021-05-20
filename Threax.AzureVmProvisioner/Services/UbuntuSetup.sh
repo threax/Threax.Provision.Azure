@@ -15,15 +15,24 @@ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && 
 sudo apt-key fingerprint 0EBFCD88 && \
 sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
 sudo apt-get update && \
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+sudo apt-get install git docker-ce docker-ce-cli containerd.io -y
 
 # Setup Network
 sudo docker network create -d bridge appnet
 
-# Setup Threax.DockerTools
-curl -L https://github.com/threax/Threax.Pipelines/releases/download/vThreax.DockerTools_1.0.0-pre05/Threax.DockerTools > ~/Threax.DockerTools
-sudo mv ~/Threax.DockerTools /bin/Threax.DockerTools
-sudo chmod 700 /bin/Threax.DockerTools
-
 # Create app dir
 sudo mkdir /app
+
+# Setup Threax.DockerTools
+
+toolsBaseDir="/app/.tools/Threax.DockerTools"
+cloneDir="$toolsBaseDir/src"
+binaryDir="$toolsBaseDir/bin"
+
+mkdir $toolsBaseDir
+mkdir $cloneDir
+mkdir $binaryDir
+git clone https://github.com/threax/Threax.DockerTools.git $cloneDir
+sudo bash "$cloneDir/Threax.DockerTools/Build.sh" 'linux-x64' $binaryDir
+sudo chmod 700 "$binaryDir/Threax.DockerTools"
+sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools
