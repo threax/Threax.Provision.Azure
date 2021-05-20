@@ -35,6 +35,15 @@ namespace Threax.AzureVmProvisioner.Controller
                 command.Add($" --pull");
             }
 
+            if (buildConfig.Args != null)
+            {
+                foreach (var arg in buildConfig.Args)
+                {
+                    var argStr = $"{arg.Key}={arg.Value}";
+                    command.Add($" --build-arg {argStr}");
+                }
+            }
+
             var exitCode = shellRunner.RunProcessGetExit(command);
             if (exitCode != 0)
             {
