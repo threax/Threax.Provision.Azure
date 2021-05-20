@@ -26,6 +26,14 @@
     "Deploy Id": {
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/id/appsettings.json"
+    },
+    "Exec Id SetupAppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json SetupAppDashboard"
+    },
+    "Exec Id AddAdmin": {
+      "commandName": "Project",
+      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin REPLACE"
     }
   }
 }

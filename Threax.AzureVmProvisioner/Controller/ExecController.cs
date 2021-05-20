@@ -16,6 +16,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     record ExecController
     (
+        ILogger<ExecController> logger,
         IVmCommands vmCommands,
         IPathHelper pathHelper,
         IArgsProvider argsProvider,
@@ -33,6 +34,9 @@ namespace Threax.AzureVmProvisioner.Controller
             }
 
             var command = argsProvider.Args[2];
+
+            logger.LogInformation($"Running exec command '{command}'.");
+
             var args = argsProvider.Args.Skip(3).ToArray();
             var fileName = Path.GetFileName(pathHelper.ConfigPath);
             await vmCommands.ThreaxDockerToolsExec($"/app/{resource.Name}/{fileName}", command, args);
