@@ -13,7 +13,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.0" />
-    <PackageReference Include="Threax.DockerBuildConfig" Version="1.1.0-pre01" />
+    <PackageReference Include="Threax.DockerBuildConfig" Version="1.1.0" />
     <PackageReference Include="Threax.ProcessHelper" Version="1.0.0-pre32" />
     <PackageReference Include="Threax.ProcessHelper.Pwsh" Version="1.0.0-pre32" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
