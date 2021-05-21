@@ -29,7 +29,7 @@
     },
     "Exec Id SetupAppDashboard": {
       "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json SetupAppDashboard"
+      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json SetupAppDashboard --exec-load file appDashboardSecret $(ProjectDir)/Example/id/secret.txt"
     },
     "Exec Id AddAdmin": {
       "commandName": "Project",

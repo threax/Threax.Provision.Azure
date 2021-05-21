@@ -59,9 +59,9 @@ namespace Threax.AzureVmProvisioner.Services
             }
         }
 
-        public async Task ThreaxDockerToolsExec(String file, String command, params String[] args)
+        public async Task ThreaxDockerToolsExec(String file, String command, List<String> args)
         {
-            var expanded = args.Length > 0 ? $"\"{String.Join("\", \"", args)}\"" : null;
+            var expanded = args.Count > 0 ? $"\"{String.Join("\" \"", args)}\"" : null; //TODO: Not secure
             var exitCode = await sshCredsManager.RunSshCommand($"sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools \"exec\" \"{file}\" \"{command}\" {expanded}");
             if (exitCode != 0)
             {

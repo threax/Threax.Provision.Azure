@@ -49,8 +49,4 @@
     <None Remove="Example\*\src\**" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Example\id\" />
-  </ItemGroup>
-
 </Project>

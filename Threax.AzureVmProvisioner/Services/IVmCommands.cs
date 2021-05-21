@@ -55,6 +55,6 @@ namespace Threax.AzureVmProvisioner.Services
         /// <param name="command"></param>
         /// <param name="args"></param>
         /// <returns></returns>
-        Task ThreaxDockerToolsExec(String file, String command, params String[] args);
+        Task ThreaxDockerToolsExec(String file, String command, List<String> args);
     }
 }

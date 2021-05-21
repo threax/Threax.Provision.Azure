@@ -73,21 +73,16 @@ namespace Threax.AzureVmProvisioner.Workers
             result = await dbContext.Database.ExecuteSqlRawAsync($"ALTER ROLE db_datawriter ADD MEMBER {readWriteCreds.User}");
             result = await dbContext.Database.ExecuteSqlRawAsync($"ALTER ROLE db_owner ADD MEMBER {ownerCreds.User}");
 
-            var appConnectionString = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, resource.ConnectionStringName);
-            if (appConnectionString == null || readWriteCreds.Created)
-            {
-                appConnectionString = sqlServerManager.CreateConnectionString(config.SqlServerName, config.SqlDbName, readWriteCreds.User, readWriteCreds.Pass);
-                await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.ConnectionStringName, appConnectionString);
-            }
+            //Always set the main connection string
+            logger.LogInformation($"Setting app db connection string '{resource.ConnectionStringName}'");
+            var appConnectionString = sqlServerManager.CreateConnectionString(config.SqlServerName, config.SqlDbName, readWriteCreds.User, readWriteCreds.Pass);
+            await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.ConnectionStringName, appConnectionString);
 
             if (!String.IsNullOrEmpty(resource.OwnerConnectionStringName))
             {
-                var ownerConnectionString = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, resource.OwnerConnectionStringName);
-                if (ownerConnectionString == null || ownerCreds.Created)
-                {
-                    ownerConnectionString = sqlServerManager.CreateConnectionString(config.SqlServerName, config.SqlDbName, ownerCreds.User, ownerCreds.Pass);
-                    await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.OwnerConnectionStringName, ownerConnectionString);
-                }
+                logger.LogInformation($"Setting owner db connection string '{resource.OwnerConnectionStringName}'");
+                var ownerConnectionString = sqlServerManager.CreateConnectionString(config.SqlServerName, config.SqlDbName, ownerCreds.User, ownerCreds.Pass);
+                await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.OwnerConnectionStringName, ownerConnectionString);
             }
         }
     }

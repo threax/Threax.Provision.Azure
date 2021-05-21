@@ -40,7 +40,7 @@ namespace Threax.AzureVmProvisioner.Workers
 
             if (!String.IsNullOrWhiteSpace(resource.AccessKeySecretName))
             {
-                logger.LogInformation($"Setting up connection string in Key Vault '{azureKeyVaultConfig.VaultName}'.");
+                logger.LogInformation($"Setting up storage connection string '{resource.AccessKeySecretName}' in Key Vault '{azureKeyVaultConfig.VaultName}'.");
 
                 await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
 
