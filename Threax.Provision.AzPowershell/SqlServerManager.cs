@@ -53,7 +53,7 @@ namespace Threax.Provision.AzPowershell
 
         public String CreateConnectionString(String serverName, String initialCatalog, String user, String pass)
         {
-            return $"Server={serverName}.database.windows.net,1433;Initial Catalog={initialCatalog};Persist Security Info=False;User ID={user};Password={pass};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
+            return $"Server={serverName}.database.windows.net,1433;Initial Catalog={initialCatalog};Persist Security Info=False;User ID={user};Password={pass};MultipleActiveResultSets=True;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;";
         }
     }
 }
