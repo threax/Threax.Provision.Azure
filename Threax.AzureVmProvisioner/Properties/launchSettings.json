@@ -34,6 +34,22 @@
     "Exec Id AddAdmin": {
       "commandName": "Project",
       "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin REPLACE"
+    },
+    "Create AppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Create $(ProjectDir)/Example/appdashboard/appsettings.json"
+    },
+    "Clone AppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Clone $(ProjectDir)/Example/appdashboard/appsettings.json"
+    },
+    "Build AppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Build $(ProjectDir)/Example/appdashboard/appsettings.json"
+    },
+    "Deploy AppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Deploy $(ProjectDir)/Example/appdashboard/appsettings.json"
     }
   }
 }
