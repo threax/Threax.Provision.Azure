@@ -55,6 +55,10 @@
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/appdashboard/appsettings.json"
     },
+    "Log AppDashboard": {
+      "commandName": "Project",
+      "commandLineArgs": "Logs $(ProjectDir)/Example/appdashboard/appsettings.json"
+    },
     "Create Nginx": {
       "commandName": "Project",
       "commandLineArgs": "Create $(ProjectDir)/Example/nginx/appsettings.json"
