@@ -35,6 +35,13 @@ namespace Threax.AzureVmProvisioner
         public String InfraKeyVaultName { get; set; }
 
         /// <summary>
+        /// The name of the key vault to create for secrets that exist outside the automation. This can be left in place
+        /// when environments are destroyed so you don't have to keep getting things like ssl certs or other secrets that
+        /// might be limited our outside our our control.
+        /// </summary>
+        public String ExternalKeyVaultName { get; set; }
+
+        /// <summary>
         /// The guid of the Azure Devops user to set permissions for.
         /// </summary>
         public Guid? AzDoUser { get; set; }
@@ -103,5 +110,25 @@ namespace Threax.AzureVmProvisioner
         /// The name of the shared app insights.
         /// </summary>
         public String AppInsightsName { get; set; }
+
+        /// <summary>
+        /// The url to add app subdomains to.
+        /// </summary>
+        public String BaseUrl { get; set; }
+
+        /// <summary>
+        /// The email address to use when applying for ssl certificates.
+        /// </summary>
+        public String SslEmail { get; set; }
+
+        /// <summary>
+        /// The name of the secret that stores the ssl cert in the infra key vault. Default: ssl-public-key
+        /// </summary>
+        public String SslPublicKeyName { get; set; } = "ssl-public-key";
+
+        /// <summary>
+        /// The name of the secret that stores teh ssl cert private key in the key vault. Default: ssl-private-key
+        /// </summary>
+        public String SslPrivateKeyName { get; set; } = "ssl-private-key";
     }
 }

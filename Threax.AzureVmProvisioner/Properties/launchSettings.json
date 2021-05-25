@@ -11,6 +11,10 @@
       "commandName": "Project",
       "commandLineArgs": "LoginAcr $(ProjectDir)/Example/env.json"
     },
+    "Get Ssl Certificate": {
+      "commandName": "Project",
+      "commandLineArgs": "GetSsl $(ProjectDir)/Example/env.json"
+    },
     "Create Id": {
       "commandName": "Project",
       "commandLineArgs": "Create $(ProjectDir)/Example/id/appsettings.json"
@@ -50,6 +54,14 @@
     "Deploy AppDashboard": {
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/appdashboard/appsettings.json"
+    },
+    "Build Nginx": {
+      "commandName": "Project",
+      "commandLineArgs": "Build $(ProjectDir)/Example/nginx/appsettings.json"
+    },
+    "Deploy Nginx": {
+      "commandName": "Project",
+      "commandLineArgs": "Deploy $(ProjectDir)/Example/nginx/appsettings.json"
     }
   }
 }

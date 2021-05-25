@@ -32,6 +32,16 @@ namespace Threax.AzureVmProvisioner.Workers
                 await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, keyVaultArm);
             }
 
+            logger.LogInformation($"Setting up external key vault '{config.ExternalKeyVaultName}'.");
+
+            if (!await keyVaultManager.Exists(config.ExternalKeyVaultName))
+            {
+                logger.LogInformation($"Creating external key vault '{config.ExternalKeyVaultName}'.");
+
+                var keyVaultArm = new ArmKeyVault(config.ExternalKeyVaultName, config.Location, config.TenantId.ToString());
+                await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, keyVaultArm);
+            }
+
             //Allow AzDo user in the key vault if one is set.
             if (config.AzDoUser != null)
             {

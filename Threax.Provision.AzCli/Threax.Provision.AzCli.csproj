@@ -10,8 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Threax.ProcessHelper" Version="1.0.0-pre32" />
-    <PackageReference Include="Threax.ProcessHelper.Pwsh" Version="1.0.0-pre32" />
+    <PackageReference Include="Threax.ProcessHelper" Version="1.0.0-pre33" />
+    <PackageReference Include="Threax.ProcessHelper.Pwsh" Version="1.0.0-pre33" />
   </ItemGroup>
 
   <ItemGroup>
