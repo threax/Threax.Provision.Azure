@@ -16,7 +16,8 @@ namespace Threax.AzureVmProvisioner.Controller
         IWorker<CreateApp> CreateApp,
         IWorker<CreateAppVault> CreateAppVault,
         IWorker<CreateAppSqlDatabase> CreateAppSqlDatabase,
-        IWorker<CreateAppStorage> CreateAppStorage
+        IWorker<CreateAppStorage> CreateAppStorage,
+        IWorker<LoadExternalSecretsWorker> LoadExternalSecrets
     )
     : IController
     {
@@ -30,6 +31,7 @@ namespace Threax.AzureVmProvisioner.Controller
             await CreateAppSqlDatabase.ExecuteAsync();
             await CreateAppStorage.ExecuteAsync();
             await CreateAppCertificate.ExecuteAsync();
+            await LoadExternalSecrets.ExecuteAsync();
         }
     }
 }

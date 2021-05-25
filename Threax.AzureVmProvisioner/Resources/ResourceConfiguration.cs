@@ -28,5 +28,10 @@ namespace Threax.AzureVmProvisioner.Resources
         /// Configuration for an app's certificate.
         /// </summary>
         public Certificate Certificate { get; set; }
+
+        /// <summary>
+        /// Any secrets from the external key vault that should link to this app.
+        /// </summary>
+        public List<ExternalSecret> ExternalSecrets { get; set; }
     }
 }
