@@ -55,7 +55,7 @@
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/appdashboard/appsettings.json"
     },
-    "Log AppDashboard": {
+    "Logs AppDashboard": {
       "commandName": "Project",
       "commandLineArgs": "Logs $(ProjectDir)/Example/appdashboard/appsettings.json"
     },
