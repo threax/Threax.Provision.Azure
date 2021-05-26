@@ -29,7 +29,8 @@ namespace Threax.AzureVmProvisioner.Controller
         IConfigLoader configLoader,
         IKeyVaultManager keyVaultManager,
         AzureKeyVaultConfig azureKeyVaultConfig, 
-        IWorker<CreateAppSecrets> createAppSecrets
+        IWorker<CreateAppSecrets> createAppSecrets,
+        IWorker<RegisterIdServer> registerIdServer
     ) : IController
     {
         public async Task Run()
@@ -58,7 +59,6 @@ namespace Threax.AzureVmProvisioner.Controller
 
             shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
 
-            //Create new app secret
             await createAppSecrets.ExecuteAsync();
 
             //Deploy
@@ -76,6 +76,8 @@ namespace Threax.AzureVmProvisioner.Controller
             var fileName = Path.GetFileName(pathHelper.ConfigPath);
             var configJson = jobj.ToString(Newtonsoft.Json.Formatting.Indented);
             await vmCommands.ThreaxDockerToolsRun($"/app/{resource.Name}/{fileName}", configJson);
+
+            await registerIdServer.ExecuteAsync();
         }
     }
 }
