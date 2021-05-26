@@ -65,7 +65,27 @@
     },
     "Exec Id AddAdmin": {
       "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin 347f6238-3dec-4062-a7cb-3fd692aaf488"
+      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin REPLACE"
+    },
+    "Create Notes": {
+      "commandName": "Project",
+      "commandLineArgs": "Create $(ProjectDir)/Example/notes/appsettings.json"
+    },
+    "Clone Notes": {
+      "commandName": "Project",
+      "commandLineArgs": "Clone $(ProjectDir)/Example/notes/appsettings.json"
+    },
+    "Build Notes": {
+      "commandName": "Project",
+      "commandLineArgs": "Build $(ProjectDir)/Example/notes/appsettings.json"
+    },
+    "Deploy Notes": {
+      "commandName": "Project",
+      "commandLineArgs": "Deploy $(ProjectDir)/Example/notes/appsettings.json"
+    },
+    "Exec Notes AddAdmin": {
+      "commandName": "Project",
+      "commandLineArgs": "Exec $(ProjectDir)/Example/notes/appsettings.json AddAdmin REPLACE"
     }
   }
 }
