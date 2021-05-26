@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Controller;
@@ -32,7 +33,7 @@ namespace Threax.AzureVmProvisioner
             {
                 services.AddSingleton<IArgsProvider>(s => new ArgsProvider(args));
 
-                services.AddSingleton<IPathHelper>(s => args.Length > 1 ? new PathHelper(args[1]) 
+                services.AddSingleton<IPathHelper>(s => args.Length > 1 ? new PathHelper(args[1])
                     : throw new InvalidOperationException("No config file path provided."));
 
                 services.AddSingleton<IConfigLoader>(s =>
@@ -44,7 +45,7 @@ namespace Threax.AzureVmProvisioner
                 services.AddSingleton<EnvironmentConfiguration>(s =>
                 {
                     var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var config = configBinder.SharedConfigInstance[EnvironmentSectionName]?.ToObject<EnvironmentConfiguration>() 
+                    var config = configBinder.SharedConfigInstance[EnvironmentSectionName]?.ToObject<EnvironmentConfiguration>()
                         ?? throw new InvalidOperationException($"No '{EnvironmentSectionName}' property defined.");
                     return config;
                 });
@@ -101,6 +102,8 @@ namespace Threax.AzureVmProvisioner
                     return result;
                 });
 
+                services.AddSingleton<RandomNumberGenerator>(services => RandomNumberGenerator.Create());
+
                 services.AddHttpClient();
                 services.AddLogging(o =>
                 {
@@ -133,6 +136,7 @@ namespace Threax.AzureVmProvisioner
                 services.AddScoped<IVmCommands, VmCommands>();
                 services.AddScoped<ISshCredsManager, SshCredsManager>();
                 services.AddScoped<IImageManager, ImageManager>();
+                services.AddSingleton<IAppSecretCreator, AppSecretCreator>();
 
                 RegisterWorkers(services, typeof(Program).Assembly);
             })
@@ -143,7 +147,7 @@ namespace Threax.AzureVmProvisioner
         {
             var genericWorkerType = typeof(IWorker<>);
 
-            foreach(var type in assembly.GetTypes())
+            foreach (var type in assembly.GetTypes())
             {
                 var concreteType = genericWorkerType.MakeGenericType(type);
                 if (concreteType.IsAssignableFrom(type) && type != concreteType)

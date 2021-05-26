@@ -148,6 +148,32 @@ namespace Threax.AzureVmProvisioner.Services
             return await shellRunner.RunProcessGetExitAsync($"ssh -i {privateKeyPath} -t {sshConnection} {command}");
         }
 
+        public async Task CopyStringToSshFile(string input, string dest)
+        {
+            var path = Path.GetTempFileName();
+            try
+            {
+                await EnsureSshHost();
+                File.WriteAllText(path, input);
+
+                var privateKeyPath = await LoadKeysAndGetSshPrivateKeyPath();
+                var finalDest = $"{vmUser}@{sshHost}:{dest}";
+                await shellRunner.RunProcessVoidAsync($"scp -i {privateKeyPath} {path} {finalDest}",
+                    invalidExitCodeMessage: $"Error running command scp for '{path}' to '{dest}'.");
+            }
+            finally
+            {
+                try
+                {
+                    File.Delete(path);
+                }
+                catch(Exception ex)
+                {
+                    logger.LogError($"{ex.GetType().Name} deleting temp secret file '{path}'.");
+                }
+            }
+        }
+
         public async Task CopySshFile(String file, String dest)
         {
             await EnsureSshHost();

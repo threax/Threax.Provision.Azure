@@ -6,10 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
+using Threax.AzureVmProvisioner.Workers;
 using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
+using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
@@ -23,7 +26,10 @@ namespace Threax.AzureVmProvisioner.Controller
         IShellRunner shellRunner,
         IVmCommands vmCommands,
         IPathHelper pathHelper,
-        IConfigLoader configLoader
+        IConfigLoader configLoader,
+        IKeyVaultManager keyVaultManager,
+        AzureKeyVaultConfig azureKeyVaultConfig, 
+        IWorker<CreateAppSecrets> createAppSecrets
     ) : IController
     {
         public async Task Run()
@@ -51,6 +57,9 @@ namespace Threax.AzureVmProvisioner.Controller
             shellRunner.RunProcessVoid($"docker tag {taggedImageName} {finalTag}", invalidExitCodeMessage: "An error occured during the docker tag.");
 
             shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
+
+            //Create new app secret
+            await createAppSecrets.ExecuteAsync();
 
             //Deploy
             logger.LogInformation($"Deploying '{image}' for branch '{buildConfig.Branch}'.");

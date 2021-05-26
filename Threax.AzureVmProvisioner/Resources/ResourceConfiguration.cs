@@ -33,5 +33,10 @@ namespace Threax.AzureVmProvisioner.Resources
         /// Any secrets from the external key vault that should link to this app.
         /// </summary>
         public List<ExternalSecret> ExternalSecrets { get; set; }
+
+        /// <summary>
+        /// The registration for the app in the id server.
+        /// </summary>
+        public IdServerRegistration IdServerRegistration { get; set; }
     }
 }
