@@ -31,14 +31,6 @@
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/id/appsettings.json"
     },
-    "Exec Id SetupAppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json SetupAppDashboard --exec-load file appDashboardSecret $(ProjectDir)/Example/id/secret.txt"
-    },
-    "Exec Id AddAdmin": {
-      "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin REPLACE"
-    },
     "Create AppDashboard": {
       "commandName": "Project",
       "commandLineArgs": "Create $(ProjectDir)/Example/appdashboard/appsettings.json"
@@ -70,6 +62,10 @@
     "Deploy Nginx": {
       "commandName": "Project",
       "commandLineArgs": "Deploy $(ProjectDir)/Example/nginx/appsettings.json"
+    },
+    "Exec Id AddAdmin": {
+      "commandName": "Project",
+      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin 347f6238-3dec-4062-a7cb-3fd692aaf488"
     }
   }
 }

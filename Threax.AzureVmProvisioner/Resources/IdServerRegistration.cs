@@ -15,7 +15,7 @@ namespace Threax.AzureVmProvisioner.Resources
 
     class IdServerRegistration
     {
-        public String IdServerPath { get; set; } = "threax-id/appsettings.json";
+        public String IdServerPath { get; set; } = "id/appsettings.json";
 
         public IdServerRegistrationType Type { get; set; }
 
