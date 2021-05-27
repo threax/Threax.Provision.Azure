@@ -9,7 +9,7 @@
     <Version>1.0.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileRunArguments>-v /var/run/docker.sock:/var/run/docker.sock</DockerfileRunArguments>
+    <DockerfileRunArguments>-v /var/run/docker.sock:/var/run/docker.sock -v threax-provision-azurevm-home:/root -v threax-provision-azurevm-temp:/tmp</DockerfileRunArguments>
   </PropertyGroup>
 
   <ItemGroup>

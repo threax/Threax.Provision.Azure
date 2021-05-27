@@ -6,6 +6,10 @@
     "Docker": {
       "commandName": "Docker"
     },
+    "Create Volumes": {
+      "commandName": "Project",
+      "commandLineArgs": "CreateWorkVolumes $(ProjectDir)/Example/env.json"
+    },
     "Login": {
       "commandName": "Docker",
       "commandLineArgs": "Login /app/Example/env.json"

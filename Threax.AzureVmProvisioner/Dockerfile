@@ -1,5 +1,3 @@
-#See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
 FROM mcr.microsoft.com/dotnet/runtime:5.0 AS base
 
 # update apt-get and install curl
@@ -8,23 +6,21 @@ RUN apt-get update && apt-get install -y curl
 # install docker
 RUN curl -sSL https://get.docker.com/ | sh
 
-# Update the list of packages
-RUN apt-get update
-# Install pre-requisite packages.
-RUN apt-get install -y wget apt-transport-https software-properties-common
-# Download the Microsoft repository GPG keys
-RUN wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
-# Register the Microsoft repository GPG keys
-RUN dpkg -i packages-microsoft-prod.deb
-# Update the list of packages after we added packages.microsoft.com
-RUN apt-get update
 # Install PowerShell
+RUN apt-get update
+RUN apt-get install -y wget apt-transport-https software-properties-common
+RUN wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
+RUN dpkg -i packages-microsoft-prod.deb
+RUN apt-get update
 RUN apt-get install -y powershell
 
+#Install Az Powershell
 RUN pwsh -c Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
 
+# Install Openssh
 RUN apt-get install -y openssh-client
 
+# Install git
 RUN apt-get install -y git
 
 WORKDIR /app
