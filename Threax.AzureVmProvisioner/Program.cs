@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
@@ -12,6 +13,7 @@ using Threax.AzureVmProvisioner.Workers;
 using Threax.ConsoleApp;
 using Threax.DeployConfig;
 using Threax.DockerBuildConfig;
+using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -125,6 +127,15 @@ namespace Threax.AzureVmProvisioner
                     //        OutputDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) Console.WriteLine(e.DataReceivedEventArgs.Data); },
                     //    }
                     //};
+                }); 
+                
+                services.AddScoped<IOSHandler>(s =>
+                {
+                    if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    {
+                        return new OSHandlerWindows();
+                    }
+                    return new OSHandlerUnix(s.GetRequiredService<IProcessRunner>());
                 });
 
                 services.AddThreaxProcessHelper();

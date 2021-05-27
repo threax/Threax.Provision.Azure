@@ -19,6 +19,7 @@ namespace Threax.AzureVmProvisioner.Services
         private readonly IVmManager vmManager;
         private readonly IPathHelper appFolderFinder;
         private readonly ILogger<SshCredsManager> logger;
+        private readonly IOSHandler osHandler;
         private String publicKeyFile;
         private String privateKeyFile;
         private String sshKeyFolder;
@@ -31,7 +32,8 @@ namespace Threax.AzureVmProvisioner.Services
             IShellRunner shellRunner,
             IVmManager vmManager,
             IPathHelper appFolderFinder,
-            ILogger<SshCredsManager> logger)
+            ILogger<SshCredsManager> logger,
+            IOSHandler osHandler)
         {
             this.config = config;
             this.keyVaultManager = keyVaultManager;
@@ -40,6 +42,7 @@ namespace Threax.AzureVmProvisioner.Services
             this.vmManager = vmManager;
             this.appFolderFinder = appFolderFinder;
             this.logger = logger;
+            this.osHandler = osHandler;
         }
 
         public void Dispose()
@@ -241,7 +244,13 @@ namespace Threax.AzureVmProvisioner.Services
                 var knownHostsFile = Path.Combine(appFolderFinder.UserSshFolder, "known_hosts");
                 if (!File.Exists(knownHostsFile))
                 {
-                    throw new InvalidOperationException($"Please create an ssh profile at '{knownHostsFile}'.");
+                    var knownHostsPath = Path.GetDirectoryName(knownHostsFile);
+                    if (!Directory.Exists(knownHostsPath))
+                    {
+                        Directory.CreateDirectory(knownHostsPath);
+                    }
+                    using var stream = File.Create(knownHostsFile);
+                    //throw new InvalidOperationException($"Please create an ssh profile at '{knownHostsFile}'.");
                 }
 
                 var key = await keyVaultManager.GetSecret(config.InfraKeyVaultName, config.SshKnownHostKey);
@@ -256,6 +265,9 @@ namespace Threax.AzureVmProvisioner.Services
 
                 File.WriteAllText(publicKeyFile, publicKey);
                 File.WriteAllText(privateKeyFile, privateKey);
+
+                osHandler.SetPermissions(publicKeyFile, "root", "root");
+                osHandler.SetPermissions(privateKeyFile, "root", "root");
 
                 var creds = await credentialLookup.GetCredentials(config.InfraKeyVaultName, config.VmAdminBaseKey);
                 vmUser = creds.User;

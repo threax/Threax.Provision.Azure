@@ -3,89 +3,96 @@
     "Threax.AzureVmProvisioner": {
       "commandName": "Project"
     },
+    "Docker": {
+      "commandName": "Docker"
+    },
+    "Login": {
+      "commandName": "Docker",
+      "commandLineArgs": "Login /app/Example/env.json"
+    },
     "CreateCommon": {
-      "commandName": "Project",
-      "commandLineArgs": "CreateCommon $(ProjectDir)/Example/env.json"
+      "commandName": "Docker",
+      "commandLineArgs": "CreateCommon /app/Example/env.json"
     },
     "LoginAcr": {
-      "commandName": "Project",
-      "commandLineArgs": "LoginAcr $(ProjectDir)/Example/env.json"
+      "commandName": "Docker",
+      "commandLineArgs": "LoginAcr /app/Example/env.json"
     },
     "Get Ssl Certificate": {
-      "commandName": "Project",
-      "commandLineArgs": "GetSsl $(ProjectDir)/Example/env.json"
+      "commandName": "Docker",
+      "commandLineArgs": "GetSsl /app/Example/env.json"
     },
     "Create Id": {
-      "commandName": "Project",
-      "commandLineArgs": "Create $(ProjectDir)/Example/id/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Create /app/Example/id/appsettings.json"
     },
     "Clone Id": {
-      "commandName": "Project",
-      "commandLineArgs": "Clone $(ProjectDir)/Example/id/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Clone /app/Example/id/appsettings.json"
     },
     "Build Id": {
-      "commandName": "Project",
-      "commandLineArgs": "Build $(ProjectDir)/Example/id/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Build /app/Example/id/appsettings.json"
     },
     "Deploy Id": {
-      "commandName": "Project",
-      "commandLineArgs": "Deploy $(ProjectDir)/Example/id/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Deploy /app/Example/id/appsettings.json"
     },
     "Create AppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Create $(ProjectDir)/Example/appdashboard/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Create /app/Example/appdashboard/appsettings.json"
     },
     "Clone AppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Clone $(ProjectDir)/Example/appdashboard/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Clone /app/Example/appdashboard/appsettings.json"
     },
     "Build AppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Build $(ProjectDir)/Example/appdashboard/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Build /app/Example/appdashboard/appsettings.json"
     },
     "Deploy AppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Deploy $(ProjectDir)/Example/appdashboard/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Deploy /app/Example/appdashboard/appsettings.json"
     },
     "Logs AppDashboard": {
-      "commandName": "Project",
-      "commandLineArgs": "Logs $(ProjectDir)/Example/appdashboard/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Logs /app/Example/appdashboard/appsettings.json"
     },
     "Create Nginx": {
-      "commandName": "Project",
-      "commandLineArgs": "Create $(ProjectDir)/Example/nginx/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Create /app/Example/nginx/appsettings.json"
     },
     "Build Nginx": {
-      "commandName": "Project",
-      "commandLineArgs": "Build $(ProjectDir)/Example/nginx/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Build /app/Example/nginx/appsettings.json"
     },
     "Deploy Nginx": {
-      "commandName": "Project",
-      "commandLineArgs": "Deploy $(ProjectDir)/Example/nginx/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Deploy /app/Example/nginx/appsettings.json"
     },
     "Exec Id AddAdmin": {
-      "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/id/appsettings.json AddAdmin REPLACE"
+      "commandName": "Docker",
+      "commandLineArgs": "Exec /app/Example/id/appsettings.json AddAdmin REPLACE"
     },
     "Create Notes": {
-      "commandName": "Project",
-      "commandLineArgs": "Create $(ProjectDir)/Example/notes/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Create /app/Example/notes/appsettings.json"
     },
     "Clone Notes": {
-      "commandName": "Project",
-      "commandLineArgs": "Clone $(ProjectDir)/Example/notes/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Clone /app/Example/notes/appsettings.json"
     },
     "Build Notes": {
-      "commandName": "Project",
-      "commandLineArgs": "Build $(ProjectDir)/Example/notes/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Build /app/Example/notes/appsettings.json"
     },
     "Deploy Notes": {
-      "commandName": "Project",
-      "commandLineArgs": "Deploy $(ProjectDir)/Example/notes/appsettings.json"
+      "commandName": "Docker",
+      "commandLineArgs": "Deploy /app/Example/notes/appsettings.json"
     },
     "Exec Notes AddAdmin": {
-      "commandName": "Project",
-      "commandLineArgs": "Exec $(ProjectDir)/Example/notes/appsettings.json AddAdmin REPLACE"
+      "commandName": "Docker",
+      "commandLineArgs": "Exec /app/Example/notes/appsettings.json AddAdmin REPLACE"
     }
   }
 }

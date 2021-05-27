@@ -33,6 +33,8 @@ mkdir $toolsBaseDir
 mkdir $cloneDir
 mkdir $binaryDir
 git clone https://github.com/threax/Threax.DockerTools.git $cloneDir
+cd $cloneDir
+git pull
 sudo bash "$cloneDir/Threax.DockerTools/Build.sh" 'linux-x64' $binaryDir
 sudo chmod 700 "$binaryDir/Threax.DockerTools"
 sudo /app/.tools/Threax.DockerTools/bin/Threax.DockerTools
