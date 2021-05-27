@@ -15,7 +15,7 @@ RUN apt-get update
 RUN apt-get install -y powershell
 
 #Install Az Powershell
-RUN pwsh -c Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
+RUN pwsh -c Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -RequiredVersion 6.0.0
 
 # Install Openssh
 RUN apt-get install -y openssh-client
