@@ -14,21 +14,21 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface IExecController : IController
+    interface IExec : IController
     {
         Task Run(ResourceConfiguration resources);
     }
 
     [HelpInfo(HelpCategory.Primary, "Run an exec command against the app on the target server.")]
-    record ExecController
+    record Exec
     (
-        ILogger<ExecController> logger,
+        ILogger<Exec> logger,
         IVmCommands vmCommands,
         IPathHelper pathHelper,
         IArgsProvider argsProvider,
         ISshCredsManager sshCredsManager
     )
-    : IExecController
+    : IExec
     {
         private const string FileType = "file";
 

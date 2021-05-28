@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    class HelpController : IController
+    class Help : IController
     {
         private static readonly String ControllerSuffix = "Controller";
 
         public Task Run()
         {
-            var assembly = typeof(HelpController).Assembly;
+            var assembly = typeof(Help).Assembly;
             var controllerType = typeof(IController);
 
             foreach (var type in assembly.GetTypes().Where(i => !i.IsInterface))

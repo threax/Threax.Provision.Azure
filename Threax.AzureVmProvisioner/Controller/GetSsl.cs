@@ -7,19 +7,19 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface IGetSslController : IController
+    interface IGetSsl : IController
     {
         Task Run(EnvironmentConfiguration EnvironmentConfiguration);
     }
 
     [HelpInfo(HelpCategory.Primary, "Get a SSL certificate from certbot and store it in the external key vault.")]
-    record GetSslController
+    record GetSsl
     (
         IPathHelper PathHelper,
         IShellRunner ShellRunner,
         IKeyVaultManager KeyVaultManager
     ) 
-    : IGetSslController
+    : IGetSsl
     {
         public async Task Run(EnvironmentConfiguration EnvironmentConfiguration)
         {

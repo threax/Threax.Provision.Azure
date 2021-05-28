@@ -31,7 +31,7 @@ namespace Threax.AzureVmProvisioner
             string command = args.Length > 0 ? args[0] : null;
 
             return AppHost
-            .Setup<IController, HelpController>(command, services =>
+            .Setup<IController, Help>(command, services =>
             {
                 services.AddSingleton<IArgsProvider>(s => new ArgsProvider(args));
 

@@ -13,15 +13,15 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface IDeployController : IController
+    interface IDeploy : IController
     {
         Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
     }
 
     [HelpInfo(HelpCategory.Primary, "Deploy the docker image for the app.")]
-    record DeployController
+    record Deploy
     (
-        ILogger<DeployController> logger,
+        ILogger<Deploy> logger,
         IImageManager imageManager,
         IShellRunner shellRunner,
         IVmCommands vmCommands,
@@ -30,7 +30,7 @@ namespace Threax.AzureVmProvisioner.Controller
         IKeyVaultManager keyVaultManager,
         ICreateAppSecrets createAppSecrets,
         IRegisterIdServer registerIdServer
-    ) : IDeployController
+    ) : IDeploy
     {
         public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
         {

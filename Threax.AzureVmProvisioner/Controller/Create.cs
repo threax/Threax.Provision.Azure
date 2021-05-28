@@ -6,15 +6,15 @@ using Threax.AzureVmProvisioner.Services;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface ICreateController : IController
+    interface ICreate : IController
     {
         Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig);
     }
 
     [HelpInfo(HelpCategory.Primary, "Create all the resources for an individual app.")]
-    record CreateController
+    record Create
     (
-        ILogger<CreateController> logger,
+        ILogger<Create> logger,
         IRunInfoLogger runInfoLogger,
         ICreateAppCertificate CreateAppCertificate,
         ICreateAppController CreateApp,
@@ -23,7 +23,7 @@ namespace Threax.AzureVmProvisioner.Controller
         ICreateAppStorage CreateAppStorage,
         ILoadExternalSecretsWorker LoadExternalSecrets
     )
-    : ICreateController
+    : ICreate
     {
         public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig)
         {

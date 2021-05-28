@@ -10,17 +10,17 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface IBuildController : IController
+    interface IBuild : IController
     {
         Task Run(BuildConfig buildConfig);
     }
 
     [HelpInfo(HelpCategory.Primary, "Build the docker image for the app.")]
-    record BuildController
+    record Build
     (
-        ILogger<BuildController> logger, 
+        ILogger<Build> logger, 
         IShellRunner shellRunner
-    ) : IBuildController
+    ) : IBuild
     {
         public async Task Run(BuildConfig buildConfig)
         {

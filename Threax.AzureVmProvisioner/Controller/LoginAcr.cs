@@ -10,19 +10,19 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface ILoginAcrController : IController
+    interface ILoginAcr : IController
     {
         Task Run(EnvironmentConfiguration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Log the machine running this app into the created ACR.")]
-    record LoginAcrController
+    record LoginAcr
     (
         IAcrManager acrManager, 
         IShellRunner shellRunner,
-        ILogger<LoginAcrController> logger
+        ILogger<LoginAcr> logger
     )
-    : ILoginAcrController
+    : ILoginAcr
     {
         public async Task Run(EnvironmentConfiguration config)
         {

@@ -4,22 +4,22 @@ using Threax.AzureVmProvisioner.Services;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface ICreateCommonController : IController
+    interface ICreateCommon : IController
     {
         Task Run(EnvironmentConfiguration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Create common resources needed by all apps.")]
-    record CreateCommonController
+    record CreateCommon
     (
-        ILogger<CreateCommonController> logger,
+        ILogger<CreateCommon> logger,
         IRunInfoLogger runInfoLogger,
         ICreateResourceGroup createResourceGroup,
         ICreateInfraKeyVault createInfraKeyVault,
         ICreateVM createVm,
         ICreateSql createSql
     )
-    : ICreateCommonController
+    : ICreateCommon
     {
         public async Task Run(EnvironmentConfiguration config)
         {
@@ -28,8 +28,11 @@ namespace Threax.AzureVmProvisioner.Controller
             await runInfoLogger.Log();
             await createResourceGroup.Run(config);
             await createInfraKeyVault.Run(config);
-            await createVm.Run(config);
-            await createSql.Run(config);
+            await Task.WhenAll
+            (
+                createVm.Run(config),
+                createSql.Run(config)
+            );
         }
     }
 }

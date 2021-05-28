@@ -10,18 +10,18 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface ICloneController : IController
+    interface IClone : IController
     {
         Task Run(BuildConfig appConfig);
     }
 
     [HelpInfo(HelpCategory.Primary, "Clone the repository for the app.")]
-    record CloneController
+    record Clone
     (
-        ILogger<CloneController> logger, 
+        ILogger<Clone> logger, 
         IShellRunner shellRunner
     ) 
-    : ICloneController
+    : IClone
     {
         public async Task Run(BuildConfig appConfig)
         {

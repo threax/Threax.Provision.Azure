@@ -18,10 +18,10 @@ namespace Threax.AzureVmProvisioner.Controller
     [HelpInfo(HelpCategory.Primary, "Do all steps needed to get an app up and running.")]
     record ManageApp
     (
-        ICreateController CreateController,
-        ICloneController CloneController,
-        IBuildController BuildController,
-        IDeployController DeployController
+        ICreate CreateController,
+        IClone CloneController,
+        IBuild BuildController,
+        IDeploy DeployController
     ) : IManageApp
     {
         public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig, BuildConfig buildConfig, DeploymentConfig deploymentConfig)

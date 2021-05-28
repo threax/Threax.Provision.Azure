@@ -4,17 +4,17 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface IDestroyWorkVolumesController : IController
+    interface IDestroyWorkVolumes : IController
     {
         Task Run();
     }
 
     [HelpInfo(HelpCategory.Primary, "Destroy the work volumes used for running the provisioner in a container.")]
-    record DestroyWorkVolumesController
+    record DestroyWorkVolumes
     (
-        ILogger<DestroyWorkVolumesController> logger, 
+        ILogger<DestroyWorkVolumes> logger, 
         IShellRunner shellRunner
-    ) : IDestroyWorkVolumesController
+    ) : IDestroyWorkVolumes
     {
         public async Task Run()
         {

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +12,17 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
-    interface ILogsController : IController
+    interface ILogs : IController
     {
         Task Run(DeploymentConfig DeploymentConfig);
     }
 
     [HelpInfo(HelpCategory.Primary, "Get the docker logs for the app.")]
-    record LogsController
+    record Logs
     (
-        ILogger<LogsController> Logger,
+        ILogger<Logs> Logger,
         ISshCredsManager SshCredsManager
-    ) : ILogsController
+    ) : ILogs
     {
         public async Task Run(DeploymentConfig DeploymentConfig)
         {
