@@ -10,24 +10,25 @@ using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
-    record CreateApp
+    interface ICreateAppController : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+    }
+
+    record CreateAppController
     (
-        EnvironmentConfiguration config,
-        ResourceConfiguration resources,
-        AzureKeyVaultConfig azureKeyVaultConfig,
         IKeyVaultManager keyVaultManager,
         IKeyVaultAccessManager keyVaultAccessManager,
-        ILogger<CreateApp> logger,
+        ILogger<CreateAppController> logger,
         IAppInsightsManager appInsightsManager,
         IServicePrincipalManager servicePrincipalManager,
         IVmCommands vmCommands,
         IPathHelper pathHelper
-    )
-    : IWorker<CreateApp>
+    ) : ICreateAppController
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             var resource = resources.Compute;
 
@@ -48,7 +49,7 @@ namespace Threax.AzureVmProvisioner.Workers
 
                 if (!await servicePrincipalManager.Exists(spName))
                 {
-                    await CreateServicePrincipal(spName);
+                    await CreateServicePrincipal(spName, config, azureKeyVaultConfig);
                 }
 
                 var id = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, "sp-id");
@@ -62,7 +63,7 @@ namespace Threax.AzureVmProvisioner.Workers
                         await servicePrincipalManager.Remove(spName);
                     }
 
-                    await CreateServicePrincipal(spName);
+                    await CreateServicePrincipal(spName, config, azureKeyVaultConfig);
 
                     id = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, "sp-id");
                 }
@@ -89,7 +90,7 @@ namespace Threax.AzureVmProvisioner.Workers
             }
         }
 
-        private async Task CreateServicePrincipal(string spName)
+        private async Task CreateServicePrincipal(string spName, EnvironmentConfiguration config, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             logger.LogInformation($"Creating service principal '{spName}'.");
 

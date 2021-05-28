@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Threax.Azure.Abstractions;
+using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Workers;
 using Threax.ProcessHelper;
 
@@ -13,7 +15,7 @@ namespace Threax.AzureVmProvisioner.Controller
         ILogger<CreateController> logger,
         IWorker<RunInfoLogger> runInfoLogger,
         IWorker<CreateAppCertificate> CreateAppCertificate,
-        IWorker<CreateApp> CreateApp,
+        ICreateAppController CreateApp,
         IWorker<CreateAppVault> CreateAppVault,
         IWorker<CreateAppSqlDatabase> CreateAppSqlDatabase,
         IWorker<CreateAppStorage> CreateAppStorage,
@@ -21,13 +23,13 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : IController
     {
-        public async Task Run()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             logger.LogInformation("Creating app resources.");
 
             await runInfoLogger.ExecuteAsync();
             await CreateAppVault.ExecuteAsync();
-            await CreateApp.ExecuteAsync();
+            await CreateApp.Run(config, resources, azureKeyVaultConfig);
             await CreateAppSqlDatabase.ExecuteAsync();
             await CreateAppStorage.ExecuteAsync();
             await CreateAppCertificate.ExecuteAsync();

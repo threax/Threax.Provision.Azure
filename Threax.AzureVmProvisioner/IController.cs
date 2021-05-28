@@ -7,6 +7,6 @@ namespace Threax.AzureVmProvisioner
 {
     interface IController
     {
-        Task Run();
+        
     }
 }

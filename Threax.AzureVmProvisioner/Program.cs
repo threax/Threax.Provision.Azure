@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
@@ -127,8 +129,8 @@ namespace Threax.AzureVmProvisioner
                     //        OutputDataReceived = (o, e) => { if (e.DataReceivedEventArgs.Data != null) Console.WriteLine(e.DataReceivedEventArgs.Data); },
                     //    }
                     //};
-                }); 
-                
+                });
+
                 services.AddScoped<IOSHandler>(s =>
                 {
                     if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
@@ -150,8 +152,26 @@ namespace Threax.AzureVmProvisioner
                 services.AddSingleton<IAppSecretCreator, AppSecretCreator>();
 
                 RegisterWorkers(services, typeof(Program).Assembly);
+                RegisterControllers(services, typeof(Program).Assembly);
             })
-            .Run(c => c.Run());
+            .Run((c, s) =>
+            {
+                var type = c.GetType();
+                var runFunc = type.GetMethod("Run");
+                if (runFunc == null)
+                {
+                    throw new InvalidOperationException($"Cannot find a 'Run' function on type '{type.FullName}'");
+                }
+
+                var parms = runFunc.GetParameters()
+                    .Select(i =>
+                    {
+                        return s.ServiceProvider.GetRequiredService(i.ParameterType);
+                    })
+                    .ToArray();
+
+                return runFunc.Invoke(c, parms) as Task;
+            });
         }
 
         private static void RegisterWorkers(IServiceCollection services, Assembly assembly)
@@ -164,6 +184,23 @@ namespace Threax.AzureVmProvisioner
                 if (concreteType.IsAssignableFrom(type) && type != concreteType)
                 {
                     services.AddScoped(concreteType, type);
+                }
+            }
+        }
+
+        private static void RegisterControllers(IServiceCollection services, Assembly assembly)
+        {
+            var controllerType = typeof(IController);
+
+            foreach (var type in assembly.GetTypes().Where(i => !i.IsInterface))
+            {
+                if (controllerType.IsAssignableFrom(type) && type != controllerType)
+                {
+                    var baseType = type.GetInterfaces().Where(i => i != controllerType && controllerType.IsAssignableFrom(i)).FirstOrDefault();
+                    if (baseType != null)
+                    {
+                        services.AddScoped(baseType, type);
+                    }
                 }
             }
         }
