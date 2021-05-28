@@ -28,11 +28,8 @@ namespace Threax.AzureVmProvisioner.Controller
             await runInfoLogger.Log();
             await createResourceGroup.Run(config);
             await createInfraKeyVault.Run(config);
-            await Task.WhenAll
-            (
-                createVm.Run(config),
-                createSql.Run(config)
-            );
+            await createVm.Run(config); //This must be synchronous with the db since it creates the vnet. That needs to be separated out
+            await createSql.Run(config);
         }
     }
 }

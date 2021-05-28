@@ -101,7 +101,9 @@ namespace Threax.AzureVmProvisioner.Services
                 File.Delete(outFile);
                 try
                 {
-                    shellRunner.RunProcessVoid($"ssh-keygen -t rsa -b 4096 -o -a 100 -f {outFile}",
+                    //Can't get -N '' to work so just send 2 newlines when making this
+                    var newlines = $"{Environment.NewLine}{Environment.NewLine}";
+                    shellRunner.RunProcessVoid($"cat {newlines} | ssh-keygen -t rsa -b 4096 -o -a 100 -f {outFile}",
                        invalidExitCodeMessage: $"Error creating keys with ssh-keygen.");
 
                     var privateKey = File.ReadAllText(outFile);
