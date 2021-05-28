@@ -11,6 +11,12 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICreateController : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Create all the resources for an individual app.")]
     record CreateController
     (
         ILogger<CreateController> logger,
@@ -22,7 +28,7 @@ namespace Threax.AzureVmProvisioner.Controller
         IWorker<CreateAppStorage> CreateAppStorage,
         IWorker<LoadExternalSecretsWorker> LoadExternalSecrets
     )
-    : IController
+    : ICreateController
     {
         public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
         {

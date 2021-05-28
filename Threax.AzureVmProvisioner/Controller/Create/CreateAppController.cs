@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Resources;
@@ -17,6 +14,7 @@ namespace Threax.AzureVmProvisioner.Controller
         Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
     }
 
+    [HelpInfo(HelpCategory.Create, "Create the app's docker info on the compute instance.")]
     record CreateAppController
     (
         IKeyVaultManager keyVaultManager,
