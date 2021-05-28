@@ -1,21 +1,15 @@
 ﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Threax.AzureVmProvisioner.Services;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Services
 {
     record RunInfoLogger
     (
         ILogger<RunInfoLogger> Logger,
         IPathHelper PathHelper
-    )
-    : IWorker<RunInfoLogger>
+    ) : IRunInfoLogger
     {
-        public Task ExecuteAsync()
+        public Task Log()
         {
             Logger.LogInformation($"Using config file: '{PathHelper.ConfigPath}'");
 

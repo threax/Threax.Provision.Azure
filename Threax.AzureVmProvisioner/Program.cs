@@ -149,6 +149,7 @@ namespace Threax.AzureVmProvisioner
                 services.AddScoped<IVmCommands, VmCommands>();
                 services.AddScoped<ISshCredsManager, SshCredsManager>();
                 services.AddScoped<IImageManager, ImageManager>();
+                services.AddScoped<IRunInfoLogger, RunInfoLogger>();
                 services.AddSingleton<IAppSecretCreator, AppSecretCreator>();
 
                 RegisterWorkers(services, typeof(Program).Assembly);

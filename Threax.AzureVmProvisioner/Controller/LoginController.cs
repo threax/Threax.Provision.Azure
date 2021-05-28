@@ -20,7 +20,7 @@ namespace Threax.AzureVmProvisioner.Controller
     {
         public async Task Run()
         {
-            shellRunner.RunProcessVoid($"Connect-AzAccount -UseDeviceAuthentication", invalidExitCodeMessage: $"Error logging into ACR '{config.AcrName}'.");
+            await shellRunner.RunProcessVoidAsync($"Connect-AzAccount -UseDeviceAuthentication", invalidExitCodeMessage: $"Error logging into ACR '{config.AcrName}'.");
         }
     }
 }
