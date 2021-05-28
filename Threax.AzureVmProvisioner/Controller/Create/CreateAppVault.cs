@@ -9,16 +9,20 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateAppVault : IController
+    {
+        Task Run(EnvironmentConfiguration config, AzureKeyVaultConfig azureKeyVaultConfig);
+    }
+
+    [HelpInfo(HelpCategory.Create, "Create the key vault for the given app.")]
     record CreateAppVault
     (
         IArmTemplateManager armTemplateManager,
-        EnvironmentConfiguration config,
-        IKeyVaultManager keyVaultManager,
-        AzureKeyVaultConfig azureKeyVaultConfig
+        IKeyVaultManager keyVaultManager
     )
-    : IWorker<CreateAppVault>
+    : ICreateAppVault
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             if (!String.IsNullOrEmpty(azureKeyVaultConfig.VaultName))
             {

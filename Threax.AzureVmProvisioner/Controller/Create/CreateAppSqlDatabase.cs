@@ -10,24 +10,27 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateAppSqlDatabase : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+    }
+
+    [HelpInfo(HelpCategory.Create, "Create the SQL database for the current app. This registers the users in the shared db compute.")]
     record CreateAppSqlDatabase
     (
         ISqlServerManager sqlServerManager,
-        EnvironmentConfiguration config,
         IKeyVaultManager keyVaultManager,
         ICredentialLookup credentialLookup,
         ISqlServerFirewallRuleManager sqlServerFirewallRuleManager,
         IKeyVaultAccessManager keyVaultAccessManager,
         ILogger<CreateAppSqlDatabase> logger,
-        AzureKeyVaultConfig azureKeyVaultConfig,
-        IMachineIpManager machineIpManager,
-        ResourceConfiguration resourceConfiguration
+        IMachineIpManager machineIpManager
     )
-    : IWorker<CreateAppSqlDatabase>
+    : ICreateAppSqlDatabase
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
         {
-            var resource = resourceConfiguration.SqlDatabase;
+            var resource = resources.SqlDatabase;
 
             if(resource == null)
             {

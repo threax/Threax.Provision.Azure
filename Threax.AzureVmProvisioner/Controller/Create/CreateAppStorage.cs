@@ -8,6 +8,12 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateAppStorage : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig);
+    }
+
+    [HelpInfo(HelpCategory.Create, "Create a storage account for the given app.")]
     record CreateAppStorage
     (
         ILogger<CreateAppStorage> logger,
@@ -15,14 +21,11 @@ namespace Threax.AzureVmProvisioner.Workers
         IArmTemplateManager armTemplateManager,
         IStorageManager storageManager,
         IKeyVaultAccessManager keyVaultAccessManager,
-        IKeyVaultManager keyVaultManager,
-        AzureKeyVaultConfig azureKeyVaultConfig,
-        AzureStorageConfig azureStorageConfig,
-        ResourceConfiguration resources
+        IKeyVaultManager keyVaultManager
     )
-    : IWorker<CreateAppStorage>
+    : ICreateAppStorage
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig)
         {
             var resource = resources.Storage;
 
