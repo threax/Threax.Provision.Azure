@@ -6,7 +6,7 @@ using Threax.AzureVmProvisioner.ArmTemplates.StorageAccount;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppStorage : IController
     {

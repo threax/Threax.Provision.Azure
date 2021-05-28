@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.ArmTemplates.KeyVault;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppVault : IController
     {

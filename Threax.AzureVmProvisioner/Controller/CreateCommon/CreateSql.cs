@@ -9,7 +9,7 @@ using Threax.AzureVmProvisioner.ArmTemplates.SqlServer;
 using Threax.AzureVmProvisioner.Services;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateSql : IController
     {

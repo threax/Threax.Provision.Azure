@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -11,7 +10,6 @@ using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
-using Threax.AzureVmProvisioner.Workers;
 using Threax.ConsoleApp;
 using Threax.DeployConfig;
 using Threax.DockerBuildConfig;
@@ -152,7 +150,6 @@ namespace Threax.AzureVmProvisioner
                 services.AddScoped<IRunInfoLogger, RunInfoLogger>();
                 services.AddSingleton<IAppSecretCreator, AppSecretCreator>();
 
-                RegisterWorkers(services, typeof(Program).Assembly);
                 RegisterControllers(services, typeof(Program).Assembly);
             })
             .Run((c, s) =>
@@ -173,20 +170,6 @@ namespace Threax.AzureVmProvisioner
 
                 return runFunc.Invoke(c, parms) as Task;
             });
-        }
-
-        private static void RegisterWorkers(IServiceCollection services, Assembly assembly)
-        {
-            var genericWorkerType = typeof(IWorker<>);
-
-            foreach (var type in assembly.GetTypes())
-            {
-                var concreteType = genericWorkerType.MakeGenericType(type);
-                if (concreteType.IsAssignableFrom(type) && type != concreteType)
-                {
-                    services.AddScoped(concreteType, type);
-                }
-            }
         }
 
         private static void RegisterControllers(IServiceCollection services, Assembly assembly)

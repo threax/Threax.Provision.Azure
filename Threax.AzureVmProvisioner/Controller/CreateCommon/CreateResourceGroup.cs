@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.ArmTemplates.ResourceGroup;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateResourceGroup : IController
     {

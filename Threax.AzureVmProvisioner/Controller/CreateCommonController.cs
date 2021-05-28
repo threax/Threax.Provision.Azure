@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Services;
-using Threax.AzureVmProvisioner.Workers;
 
 namespace Threax.AzureVmProvisioner.Controller
 {

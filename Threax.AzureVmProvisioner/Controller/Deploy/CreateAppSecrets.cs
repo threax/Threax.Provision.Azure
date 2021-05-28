@@ -1,33 +1,28 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
-using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.DeployConfig;
-using Threax.DockerBuildConfig;
-using Threax.ProcessHelper;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICreateAppSecrets : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+    }
+
     record CreateAppSecrets
     (
-        EnvironmentConfiguration config,
-        ResourceConfiguration resourceConfiguration,
         ILogger<CreateAppSecrets> logger,
-        IAppSecretCreator AppSecretCreator,
-        IKeyVaultManager keyVaultManager,
-        AzureKeyVaultConfig azureKeyVaultConfig,
-        DeploymentConfig DeploymentConfig
+        IAppSecretCreator appSecretCreator,
+        IKeyVaultManager keyVaultManager
     )
-    : IWorker<CreateAppSecrets>
+    : ICreateAppSecrets
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
         {
 
             var idReg = resourceConfiguration.IdServerRegistration;
@@ -40,10 +35,10 @@ namespace Threax.AzureVmProvisioner.Workers
                     case IdServerRegistrationType.None:
                         break;
                     case IdServerRegistrationType.AppDashboard:
-                        await SetupAppDashboard();
+                        await SetupAppDashboard(resourceConfiguration, azureKeyVaultConfig);
                         break;
                     case IdServerRegistrationType.RegularApp:
-                        await SetupRegularApp();
+                        await SetupRegularApp(resourceConfiguration, azureKeyVaultConfig);
                         break;
                     default:
                         throw new InvalidOperationException($"{nameof(IdServerRegistrationType)} '{idReg.Type}' not supported.");
@@ -51,24 +46,24 @@ namespace Threax.AzureVmProvisioner.Workers
             }
         }
 
-        private async Task SetupAppDashboard()
+        private async Task SetupAppDashboard(ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             logger.LogInformation("Create jwt secret");
             var idReg = resourceConfiguration.IdServerRegistration;
-            var jwtAuth = AppSecretCreator.CreateSecret();
+            var jwtAuth = appSecretCreator.CreateSecret();
             await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, idReg.JwtAuthSecretName, jwtAuth);
         }
 
-        private async Task SetupRegularApp()
+        private async Task SetupRegularApp(ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             var idReg = resourceConfiguration.IdServerRegistration;
 
             logger.LogInformation("Create jwt secret");
-            var jwtAuth = AppSecretCreator.CreateSecret();
+            var jwtAuth = appSecretCreator.CreateSecret();
             await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, idReg.JwtAuthSecretName, jwtAuth);
 
             logger.LogInformation("Create client creds secret");
-            var sharedClientCreds = AppSecretCreator.CreateSecret();
+            var sharedClientCreds = appSecretCreator.CreateSecret();
             await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, idReg.ClientCredentialsSecretName, sharedClientCreds);
         }
     }

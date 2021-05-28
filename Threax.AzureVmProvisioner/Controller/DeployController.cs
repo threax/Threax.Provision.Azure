@@ -1,15 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
-using Threax.AzureVmProvisioner.Workers;
+using Threax.DeployConfig;
 using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
 using Threax.Provision.AzPowershell;
@@ -18,9 +15,6 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     record DeployController
     (
-        EnvironmentConfiguration config,
-        ResourceConfiguration resourceConfiguration,
-        BuildConfig buildConfig,
         ILogger<DeployController> logger,
         IImageManager imageManager,
         IShellRunner shellRunner,
@@ -28,12 +22,16 @@ namespace Threax.AzureVmProvisioner.Controller
         IPathHelper pathHelper,
         IConfigLoader configLoader,
         IKeyVaultManager keyVaultManager,
-        AzureKeyVaultConfig azureKeyVaultConfig, 
-        IWorker<CreateAppSecrets> createAppSecrets,
-        IWorker<RegisterIdServer> registerIdServer
+        ICreateAppSecrets createAppSecrets,
+        IRegisterIdServer registerIdServer
     ) : IController
     {
-        public async Task Run()
+        public async Task Run(
+        EnvironmentConfiguration config,
+        ResourceConfiguration resourceConfiguration,
+        BuildConfig buildConfig,
+        AzureKeyVaultConfig azureKeyVaultConfig,
+        DeploymentConfig deploymentConfig)
         {
             var resource = resourceConfiguration.Compute;
 
@@ -59,7 +57,7 @@ namespace Threax.AzureVmProvisioner.Controller
 
             shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
 
-            await createAppSecrets.ExecuteAsync();
+            await createAppSecrets.Run(config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
 
             //Deploy
             logger.LogInformation($"Deploying '{image}' for branch '{buildConfig.Branch}'.");
@@ -77,7 +75,7 @@ namespace Threax.AzureVmProvisioner.Controller
             var configJson = jobj.ToString(Newtonsoft.Json.Formatting.Indented);
             await vmCommands.ThreaxDockerToolsRun($"/app/{resource.Name}/{fileName}", configJson);
 
-            await registerIdServer.ExecuteAsync();
+            await registerIdServer.Run(config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
         }
     }
 }

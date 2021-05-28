@@ -13,23 +13,24 @@ using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
+    interface IRegisterIdServer : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+    }
+
     record RegisterIdServer
     (
-        EnvironmentConfiguration config,
-        ResourceConfiguration resourceConfiguration,
         ILogger<RegisterIdServer> logger,
         IAppSecretCreator AppSecretCreator,
         IKeyVaultManager keyVaultManager,
-        AzureKeyVaultConfig azureKeyVaultConfig,
         IVmCommands vmCommands,
-        ISshCredsManager sshCredsManager,
-        DeploymentConfig DeploymentConfig
+        ISshCredsManager sshCredsManager
     )
-    : IWorker<RegisterIdServer>
+    : IRegisterIdServer
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
         {
             var serverSideFilesToRemove = new List<String>();
             try
@@ -44,10 +45,10 @@ namespace Threax.AzureVmProvisioner.Workers
                         case IdServerRegistrationType.None:
                             break;
                         case IdServerRegistrationType.AppDashboard:
-                            await SetupAppDashboard(serverSideFilesToRemove);
+                            await SetupAppDashboard(serverSideFilesToRemove, resourceConfiguration, azureKeyVaultConfig);
                             break;
                         case IdServerRegistrationType.RegularApp:
-                            await SetupRegularApp(serverSideFilesToRemove);
+                            await SetupRegularApp(serverSideFilesToRemove, config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
                             break;
                         default:
                             throw new InvalidOperationException($"{nameof(IdServerRegistrationType)} '{idReg.Type}' not supported.");
@@ -71,7 +72,7 @@ namespace Threax.AzureVmProvisioner.Workers
             }
         }
 
-        private async Task SetupAppDashboard(List<String> serverSideFilesToRemove)
+        private async Task SetupAppDashboard(List<String> serverSideFilesToRemove, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             var idReg = resourceConfiguration.IdServerRegistration;
             logger.LogInformation($"Get jwt secret '{idReg.JwtAuthSecretName}' from '{azureKeyVaultConfig.VaultName}'");
@@ -86,7 +87,7 @@ namespace Threax.AzureVmProvisioner.Workers
             });
         }
 
-        private async Task SetupRegularApp(List<String> serverSideFilesToRemove)
+        private async Task SetupRegularApp(List<String> serverSideFilesToRemove, EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
         {
             var idReg = resourceConfiguration.IdServerRegistration;
 
@@ -104,7 +105,7 @@ namespace Threax.AzureVmProvisioner.Workers
 
             logger.LogInformation("Register with id server");
             await vmCommands.ThreaxDockerToolsExec($"/app/{idReg.IdServerPath}", "AddFromMetadata", new List<string>() {
-                $"https://{DeploymentConfig.Name}.{config.BaseUrl}",
+                $"https://{deploymentConfig.Name}.{config.BaseUrl}",
                 "--exec-load", "File", "jwtAuthSecret", serverJwtAuthPath,
                 "--exec-load", "File", "clientCredsSecret", serverClientCredsPath
             });

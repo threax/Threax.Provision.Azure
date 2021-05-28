@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -12,6 +8,7 @@ namespace Threax.AzureVmProvisioner
         Primary,
         Create,
         CreateCommon,
+        Deploy
     }
 
     [AttributeUsage(AttributeTargets.Class)]
