@@ -5,6 +5,12 @@ using System.Text;
 
 namespace Threax.AzureVmProvisioner.Services
 {
+    interface IStringGenerator
+    {
+        string CreateBase64String(int numBytes);
+        void Dispose();
+    }
+
     class StringGenerator : IDisposable, IStringGenerator
     {
         RandomNumberGenerator numberGen;

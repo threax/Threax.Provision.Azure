@@ -5,6 +5,16 @@ using System.Text;
 
 namespace Threax.AzureVmProvisioner.Services
 {
+    interface IPathHelper
+    {
+        string ConfigPath { get; }
+        string ConfigDirectory { get; }
+        string UserSshFolder { get; }
+        string AppUserFolder { get; }
+
+        string GetTempProvisionPath();
+    }
+
     class PathHelper : IPathHelper
     {
         public PathHelper(String baseFile)

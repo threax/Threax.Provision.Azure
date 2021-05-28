@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace Threax.AzureVmProvisioner.Services
 {
+    interface IAppSecretCreator
+    {
+        string CreateSecret();
+    }
+
     record AppSecretCreator
     (
         RandomNumberGenerator RandomNumberGenerator
