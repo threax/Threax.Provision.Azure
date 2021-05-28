@@ -1,16 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
-using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.DeployConfig;
-using Threax.DockerBuildConfig;
-using Threax.ProcessHelper;
 using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
@@ -20,6 +15,7 @@ namespace Threax.AzureVmProvisioner.Controller
         Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
     }
 
+    [HelpInfo(HelpCategory.Deploy, "Register an app with the id server. This will update the secrets with the current vault values.")]
     record RegisterIdServer
     (
         ILogger<RegisterIdServer> logger,

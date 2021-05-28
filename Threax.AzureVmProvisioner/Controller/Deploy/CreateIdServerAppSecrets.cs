@@ -14,9 +14,10 @@ namespace Threax.AzureVmProvisioner.Controller
         Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
     }
 
-    record CreateAppSecrets
+    [HelpInfo(HelpCategory.Deploy, "Create the id server secrets for an app.")]
+    record CreateIdServerAppSecrets
     (
-        ILogger<CreateAppSecrets> logger,
+        ILogger<CreateIdServerAppSecrets> logger,
         IAppSecretCreator appSecretCreator,
         IKeyVaultManager keyVaultManager
     )

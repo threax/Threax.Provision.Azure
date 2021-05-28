@@ -10,15 +10,20 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICloneController : IController
+    {
+        Task Run(BuildConfig appConfig);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Clone the repository for the app.")]
     record CloneController
     (
-        BuildConfig appConfig, 
         ILogger<CloneController> logger, 
         IShellRunner shellRunner
     ) 
-    : IController
+    : ICloneController
     {
-        public Task Run()
+        public Task Run(BuildConfig appConfig)
         {
             var clonePath = Path.GetFullPath(appConfig.ClonePath);
             var repo = appConfig.RepoUrl;

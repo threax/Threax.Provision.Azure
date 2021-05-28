@@ -13,6 +13,12 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface IDeployController : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Deploy the docker image for the app.")]
     record DeployController
     (
         ILogger<DeployController> logger,
@@ -24,18 +30,13 @@ namespace Threax.AzureVmProvisioner.Controller
         IKeyVaultManager keyVaultManager,
         ICreateAppSecrets createAppSecrets,
         IRegisterIdServer registerIdServer
-    ) : IController
+    ) : IDeployController
     {
-        public async Task Run(
-        EnvironmentConfiguration config,
-        ResourceConfiguration resourceConfiguration,
-        BuildConfig buildConfig,
-        AzureKeyVaultConfig azureKeyVaultConfig,
-        DeploymentConfig deploymentConfig)
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
         {
             var resource = resourceConfiguration.Compute;
 
-            if(resource == null)
+            if (resource == null)
             {
                 throw new InvalidOperationException($"You must supply a '{nameof(resourceConfiguration.Compute)}' property in your resource configuration.");
             }

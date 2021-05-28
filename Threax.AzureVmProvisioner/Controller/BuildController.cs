@@ -10,14 +10,19 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface IBuildController : IController
+    {
+        Task Run(BuildConfig buildConfig);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Build the docker image for the app.")]
     record BuildController
     (
-        BuildConfig buildConfig, 
         ILogger<BuildController> logger, 
         IShellRunner shellRunner
-    ) : IController
+    ) : IBuildController
     {
-        public Task Run()
+        public Task Run(BuildConfig buildConfig)
         {
             var context = buildConfig.GetContext();
             var dockerFile = Path.GetFullPath(Path.Combine(context, buildConfig.Dockerfile ?? throw new InvalidOperationException($"Please provide {nameof(buildConfig.Dockerfile)} when using build.")));

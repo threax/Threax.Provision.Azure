@@ -10,13 +10,19 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ILoginController : IController
+    {
+        Task Run();
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Log into the Azure Services")]
     record LoginController
     (
         EnvironmentConfiguration config, 
         IShellRunner shellRunner,
         ILogger<LoginController> logger
     )
-    : IController
+    : ILoginController
     {
         public async Task Run()
         {

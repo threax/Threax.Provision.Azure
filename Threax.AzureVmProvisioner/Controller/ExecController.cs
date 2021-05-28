@@ -14,20 +14,25 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface IExecController : IController
+    {
+        Task Run(ResourceConfiguration resources);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Run an exec command against the app on the target server.")]
     record ExecController
     (
         ILogger<ExecController> logger,
         IVmCommands vmCommands,
         IPathHelper pathHelper,
         IArgsProvider argsProvider,
-        ResourceConfiguration resources,
         ISshCredsManager sshCredsManager
     )
-    : IController
+    : IExecController
     {
         private const string FileType = "file";
 
-        public async Task Run()
+        public async Task Run(ResourceConfiguration resources)
         {
             var serverSideFilesToRemove = new List<String>();
             try
@@ -84,13 +89,13 @@ namespace Threax.AzureVmProvisioner.Controller
             finally
             {
                 //Remove server side files
-                foreach(var file in serverSideFilesToRemove)
+                foreach (var file in serverSideFilesToRemove)
                 {
                     try
                     {
                         await sshCredsManager.RunSshCommand($"rm -f \"{file}\"");
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         logger.LogError($"{ex.GetType().Name} erasing server side file '{file}'. Message: '{ex.Message}'. Please remove file manually.");
                     }

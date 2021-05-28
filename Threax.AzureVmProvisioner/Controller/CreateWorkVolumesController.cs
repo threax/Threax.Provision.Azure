@@ -4,11 +4,17 @@ using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICreateWorkVolumesController : IController
+    {
+        Task Run();
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Create the work volumes used for running the provisioner in a container.")]
     record CreateWorkVolumesController
     (
         ILogger<CreateWorkVolumesController> logger, 
         IShellRunner shellRunner
-    ) : IController
+    ) : ICreateWorkVolumesController
     {
         public Task Run()
         {

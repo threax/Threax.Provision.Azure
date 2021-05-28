@@ -11,18 +11,22 @@ using Threax.ConsoleApp;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ISetSecretController : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Set a secret in the linked app's key vault.")]
     record SetSecretController
     (
         ILogger<SetSecretController> logger,
         IVmCommands vmCommands,
         IArgsProvider argsProvider,
-        EnvironmentConfiguration config,
-        IPathHelper pathHelper,
-        ResourceConfiguration resources
+        IPathHelper pathHelper
     )
-    : IController
+    : ISetSecretController
     {
-        public async Task Run()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources)
         {
             var resource = resources.Compute;
 
