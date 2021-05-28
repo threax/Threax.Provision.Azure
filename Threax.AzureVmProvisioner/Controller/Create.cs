@@ -31,11 +31,14 @@ namespace Threax.AzureVmProvisioner.Controller
 
             await runInfoLogger.Log();
             await CreateAppVault.Run(config, azureKeyVaultConfig);
-            await CreateApp.Run(config, resources, azureKeyVaultConfig);
-            await CreateAppSqlDatabase.Run(config, resources, azureKeyVaultConfig);
-            await CreateAppStorage.Run(config, resources, azureKeyVaultConfig, azureStorageConfig);
-            await CreateAppCertificate.Run(config, resources, azureKeyVaultConfig);
-            await LoadExternalSecrets.Run(config, resources, azureKeyVaultConfig);
+            await Task.WhenAll
+            (
+                CreateApp.Run(config, resources, azureKeyVaultConfig),
+                CreateAppSqlDatabase.Run(config, resources, azureKeyVaultConfig),
+                CreateAppStorage.Run(config, resources, azureKeyVaultConfig, azureStorageConfig),
+                CreateAppCertificate.Run(config, resources, azureKeyVaultConfig),
+                LoadExternalSecrets.Run(config, resources, azureKeyVaultConfig)
+            );
         }
     }
 }
