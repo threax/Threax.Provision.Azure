@@ -13,7 +13,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateSql : IController
     {
-        Task Run(EnvironmentConfiguration config);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.CreateCommon, "Create the common sql server and shared db instance for all apps to use.")]
@@ -25,22 +25,24 @@ namespace Threax.AzureVmProvisioner.Controller
         ICredentialLookup credentialLookup
     ) : ICreateSql
     {
-        public async Task Run(EnvironmentConfiguration config)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+
             //In this setup there is actually only 1 db to save money.
             //So both the sql server and the db will be provisioned in this step.
             //You would want to have separate dbs in a larger setup.
-            await keyVaultAccessManager.Unlock(config.InfraKeyVaultName, config.UserId);
+            await keyVaultAccessManager.Unlock(envConfig.InfraKeyVaultName, envConfig.UserId);
 
-            var saCreds = await credentialLookup.GetOrCreateCredentials(config.InfraKeyVaultName, config.SqlSaBaseKey);
+            var saCreds = await credentialLookup.GetOrCreateCredentials(envConfig.InfraKeyVaultName, envConfig.SqlSaBaseKey);
 
             //Setup logical server
-            logger.LogInformation($"Setting up SQL Logical Server '{config.SqlServerName}' in Resource Group '{config.ResourceGroup}'.");
-            await this.armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, new ArmSqlServer(config.SqlServerName, saCreds.User, saCreds.Pass, config.VnetName, config.VnetSubnetName));
+            logger.LogInformation($"Setting up SQL Logical Server '{envConfig.SqlServerName}' in Resource Group '{envConfig.ResourceGroup}'.");
+            await this.armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, new ArmSqlServer(envConfig.SqlServerName, saCreds.User, saCreds.Pass, envConfig.VnetName, envConfig.VnetSubnetName));
 
             //Setup shared sql db
-            logger.LogInformation($"Setting up Shared SQL Database '{config.SqlDbName}' on SQL Logical Server '{config.SqlServerName}'.");
-            await this.armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, new ArmSqlDb(config.SqlServerName, config.SqlDbName));
+            logger.LogInformation($"Setting up Shared SQL Database '{envConfig.SqlDbName}' on SQL Logical Server '{envConfig.SqlServerName}'.");
+            await this.armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, new ArmSqlDb(envConfig.SqlServerName, envConfig.SqlDbName));
         }
     }
 }

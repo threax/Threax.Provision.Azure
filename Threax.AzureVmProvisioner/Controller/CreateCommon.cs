@@ -6,7 +6,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateCommon : IController
     {
-        Task Run(EnvironmentConfiguration config);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Create common resources needed by all apps.")]
@@ -21,11 +21,11 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ICreateCommon
     {
-        public async Task Run(EnvironmentConfiguration config)
+        public async Task Run(Configuration config)
         {
             logger.LogInformation("Creating common resources.");
 
-            await runInfoLogger.Log();
+            await runInfoLogger.Log(config);
             await createResourceGroup.Run(config);
             await createInfraKeyVault.Run(config);
             await createVm.Run(config); //This must be synchronous with the db since it creates the vnet. That needs to be separated out

@@ -7,8 +7,6 @@ namespace Threax.AzureVmProvisioner.Services
 {
     interface IPathHelper
     {
-        string ConfigPath { get; }
-        string ConfigDirectory { get; }
         string UserSshFolder { get; }
         string AppUserFolder { get; }
 
@@ -17,15 +15,9 @@ namespace Threax.AzureVmProvisioner.Services
 
     class PathHelper : IPathHelper
     {
-        public PathHelper(String baseFile)
+        public PathHelper()
         {
-            ConfigPath = baseFile = Path.GetFullPath(baseFile);
-            this.ConfigDirectory = Path.GetDirectoryName(baseFile);
         }
-
-        public String ConfigPath { get; }
-
-        public String ConfigDirectory { get; }
 
         public String AppUserFolder => Path.Combine(GetUserHomePath(), ".threaxprovision");
 

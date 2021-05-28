@@ -9,7 +9,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IGetSsl : IController
     {
-        Task Run(EnvironmentConfiguration EnvironmentConfiguration);
+        Task Run(Configuration configuration);
     }
 
     [HelpInfo(HelpCategory.Primary, "Get a SSL certificate from certbot and store it in the external key vault.")]
@@ -21,19 +21,21 @@ namespace Threax.AzureVmProvisioner.Controller
     ) 
     : IGetSsl
     {
-        public async Task Run(EnvironmentConfiguration EnvironmentConfiguration)
+        public async Task Run(Configuration config)
         {
-            if (!await KeyVaultManager.Exists(EnvironmentConfiguration.ExternalKeyVaultName))
+            var envConfig = config.Environment;
+
+            if (!await KeyVaultManager.Exists(envConfig.ExternalKeyVaultName))
             {
-                throw new InvalidOperationException($"You must create a key vault named '{EnvironmentConfiguration.ExternalKeyVaultName}' before getting a ssl cert. CreateCommon will do this for you.");
+                throw new InvalidOperationException($"You must create a key vault named '{envConfig.ExternalKeyVaultName}' before getting a ssl cert. CreateCommon will do this for you.");
             }
 
-            var keyVaultUnlockTask = KeyVaultManager.UnlockSecrets(EnvironmentConfiguration.ExternalKeyVaultName, EnvironmentConfiguration.UserId);
+            var keyVaultUnlockTask = KeyVaultManager.UnlockSecrets(envConfig.ExternalKeyVaultName, envConfig.UserId);
 
-            var baseUrl = EnvironmentConfiguration.BaseUrl ?? throw new InvalidOperationException($"You must include a '{nameof(EnvironmentConfiguration.BaseUrl)}' property when making ssl certificates.");
+            var baseUrl = envConfig.BaseUrl ?? throw new InvalidOperationException($"You must include a '{nameof(envConfig.BaseUrl)}' property when making ssl certificates.");
             var commonName = $"*.{baseUrl}";
-            var email = EnvironmentConfiguration.SslEmail ?? throw new InvalidOperationException($"You must include a '{nameof(EnvironmentConfiguration.SslEmail)}' property when making ssl certificates.");
-            var path = PathHelper.ConfigDirectory;
+            var email = envConfig.SslEmail ?? throw new InvalidOperationException($"You must include a '{nameof(envConfig.SslEmail)}' property when making ssl certificates.");
+            var path = config.GetConfigDirectory();
 
             var time = DateTime.Now.ToString("yyyyMMddhhmmss");
             var certTempPath = Path.GetFullPath(Path.Combine(path, ".files", $"cert_{time}"));
@@ -58,8 +60,8 @@ namespace Threax.AzureVmProvisioner.Controller
                 await keyVaultUnlockTask;
                 await Task.WhenAll
                 (
-                    KeyVaultManager.SetSecret(EnvironmentConfiguration.ExternalKeyVaultName, EnvironmentConfiguration.SslPublicKeyName, publicKey),
-                    KeyVaultManager.SetSecret(EnvironmentConfiguration.ExternalKeyVaultName, EnvironmentConfiguration.SslPrivateKeyName, privateKey)
+                    KeyVaultManager.SetSecret(envConfig.ExternalKeyVaultName, envConfig.SslPublicKeyName, publicKey),
+                    KeyVaultManager.SetSecret(envConfig.ExternalKeyVaultName, envConfig.SslPrivateKeyName, privateKey)
                 );
             }
             finally

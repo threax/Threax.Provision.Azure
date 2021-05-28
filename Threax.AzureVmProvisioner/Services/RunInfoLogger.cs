@@ -5,7 +5,7 @@ namespace Threax.AzureVmProvisioner.Services
 {
     interface IRunInfoLogger
     {
-        Task Log();
+        Task Log(Configuration config);
     }
 
     record RunInfoLogger
@@ -14,9 +14,9 @@ namespace Threax.AzureVmProvisioner.Services
         IPathHelper PathHelper
     ) : IRunInfoLogger
     {
-        public Task Log()
+        public Task Log(Configuration config)
         {
-            Logger.LogInformation($"Using config file: '{PathHelper.ConfigPath}'");
+            Logger.LogInformation($"Using config file: '{config.GetConfigPath()}'");
 
             return Task.CompletedTask;
         }

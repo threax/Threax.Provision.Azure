@@ -12,7 +12,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IClone : IController
     {
-        Task Run(BuildConfig appConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Clone the repository for the app.")]
@@ -23,21 +23,23 @@ namespace Threax.AzureVmProvisioner.Controller
     ) 
     : IClone
     {
-        public async Task Run(BuildConfig appConfig)
+        public async Task Run(Configuration config)
         {
-            if (String.IsNullOrEmpty(appConfig.RepoUrl))
+            var buildConfig = config.Build;
+
+            if (String.IsNullOrEmpty(buildConfig.RepoUrl))
             {
-                logger.LogInformation($"No '{nameof(appConfig.RepoUrl)}' Not cloning anything for current app.");
+                logger.LogInformation($"No '{nameof(buildConfig.RepoUrl)}' Not cloning anything for current app.");
                 return;
             }
 
-            var clonePath = Path.GetFullPath(appConfig.ClonePath);
-            var repo = appConfig.RepoUrl;
+            var clonePath = Path.GetFullPath(buildConfig.ClonePath);
+            var repo = buildConfig.RepoUrl;
 
-            if (Directory.Exists(appConfig.ClonePath))
+            if (Directory.Exists(buildConfig.ClonePath))
             {
                 logger.LogInformation($"Pulling changes to {clonePath}");
-                await shellRunner.RunProcessVoidAsync($"cd {appConfig.ClonePath};git pull", invalidExitCodeMessage: $"Error pulling repository '{clonePath}'.");
+                await shellRunner.RunProcessVoidAsync($"cd {buildConfig.ClonePath};git pull", invalidExitCodeMessage: $"Error pulling repository '{clonePath}'.");
             }
             else
             {

@@ -14,7 +14,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ILogs : IController
     {
-        Task Run(DeploymentConfig DeploymentConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Get the docker logs for the app.")]
@@ -24,11 +24,13 @@ namespace Threax.AzureVmProvisioner.Controller
         ISshCredsManager SshCredsManager
     ) : ILogs
     {
-        public async Task Run(DeploymentConfig DeploymentConfig)
+        public async Task Run(Configuration config)
         {
-            Logger.LogInformation($"Getting logs for '{DeploymentConfig.Name}'.");
+            var deploymentConfig = config.Deploy;
 
-            await SshCredsManager.RunSshCommand($"sudo docker logs {DeploymentConfig.Name}");
+            Logger.LogInformation($"Getting logs for '{deploymentConfig.Name}'.");
+
+            await SshCredsManager.RunSshCommand($"sudo docker logs {deploymentConfig.Name}");
         }
     }
 }

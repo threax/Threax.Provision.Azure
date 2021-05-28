@@ -19,13 +19,6 @@ namespace Threax.AzureVmProvisioner
 {
     class Program
     {
-        private const String EnvironmentSectionName = "Environment";
-        private const String ResourcesSectionName = "Resources";
-        private const String KeyVaultSectionName = "KeyVault";
-        private const String StorageSectionName = "Storage";
-        private const String BuildSectionName = "Build";
-        private const String DeploySectionName = "Deploy";
-
         public static Task<int> Main(string[] args)
         {
             string command = args.Length > 0 ? args[0] : null;
@@ -35,53 +28,15 @@ namespace Threax.AzureVmProvisioner
             {
                 services.AddSingleton<IArgsProvider>(s => new ArgsProvider(args));
 
-                services.AddSingleton<IPathHelper>(s => args.Length > 1 ? new PathHelper(args[1])
-                    : throw new InvalidOperationException("No config file path provided."));
+                services.AddSingleton<IPathHelper, PathHelper>();
+                services.AddSingleton<IConfigLoader, ConfigLoader>();
 
-                services.AddSingleton<IConfigLoader>(s =>
+                services.AddSingleton<Configuration>(s =>
                 {
-                    var pathHelper = s.GetRequiredService<IPathHelper>();
-                    return new ConfigLoader(pathHelper.ConfigPath);
-                });
-
-                services.AddSingleton<EnvironmentConfiguration>(s =>
-                {
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var config = configBinder.SharedConfigInstance[EnvironmentSectionName]?.ToObject<EnvironmentConfiguration>()
-                        ?? throw new InvalidOperationException($"No '{EnvironmentSectionName}' property defined.");
-                    return config;
-                });
-
-                services.AddSingleton<ResourceConfiguration>(s =>
-                {
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var config = configBinder.SharedConfigInstance[ResourcesSectionName]?.ToObject<ResourceConfiguration>()
-                        ?? throw new InvalidOperationException($"No '{ResourcesSectionName}' property defined.");
-                    return config;
-                });
-
-                services.AddSingleton<AzureKeyVaultConfig>(s =>
-                {
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var config = configBinder.SharedConfigInstance[KeyVaultSectionName]?.ToObject<AzureKeyVaultConfig>()
-                        ?? new AzureKeyVaultConfig();
-                    return config;
-                });
-
-                services.AddSingleton<AzureStorageConfig>(s =>
-                {
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var config = configBinder.SharedConfigInstance[StorageSectionName]?.ToObject<AzureStorageConfig>()
-                        ?? new AzureStorageConfig();
-                    return config;
-                });
-
-                services.AddSingleton<BuildConfig>(s =>
-                {
-                    var pathHelper = s.GetRequiredService<IPathHelper>();
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var result = new BuildConfig(pathHelper.ConfigPath);
-                    var config = configBinder.SharedConfigInstance[BuildSectionName];
+                    var configPath = args.Length > 1 ? args[1] : throw new InvalidOperationException("No config file path provided.");
+                    var result = new Configuration(configPath);
+                    var configLoader = s.GetRequiredService<IConfigLoader>();
+                    var config = configLoader.LoadConfig(configPath);
                     if (config != null)
                     {
                         using var reader = config.CreateReader();
@@ -90,19 +45,7 @@ namespace Threax.AzureVmProvisioner
                     return result;
                 });
 
-                services.AddSingleton<DeploymentConfig>(s =>
-                {
-                    var pathHelper = s.GetRequiredService<IPathHelper>();
-                    var configBinder = s.GetRequiredService<IConfigLoader>();
-                    var result = new DeploymentConfig(pathHelper.ConfigPath);
-                    var config = configBinder.SharedConfigInstance[DeploySectionName];
-                    if (config != null)
-                    {
-                        using var reader = config.CreateReader();
-                        Newtonsoft.Json.JsonSerializer.CreateDefault().Populate(reader, result);
-                    }
-                    return result;
-                });
+                services.AddSingleton<EnvironmentConfiguration>(s => s.GetRequiredService<Configuration>().Environment);
 
                 services.AddSingleton<RandomNumberGenerator>(services => RandomNumberGenerator.Create());
 

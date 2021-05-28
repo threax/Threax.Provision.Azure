@@ -13,7 +13,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ISetSecret : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Set a secret in the linked app's key vault.")]
@@ -26,8 +26,11 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ISetSecret
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var resources = config.Resources;
+
             var resource = resources.Compute;
 
             var args = argsProvider.Args.Skip(2).ToList();
@@ -39,10 +42,10 @@ namespace Threax.AzureVmProvisioner.Controller
             var name = args[0];
             var source = args[1];
 
-            var fileName = Path.GetFileName(pathHelper.ConfigPath);
+            var fileName = Path.GetFileName(config.GetConfigPath());
             var configFilePath = $"/app/{resource.Name}/{fileName}";
 
-            await vmCommands.SetSecretFromFile(config.VmName, config.ResourceGroup, pathHelper.ConfigPath, configFilePath, name, source);
+            await vmCommands.SetSecretFromFile(envConfig.VmName, envConfig.ResourceGroup, config.GetConfigPath(), configFilePath, name, source);
         }
     }
 }

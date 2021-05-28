@@ -1,23 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.ArmTemplates.StorageAccount;
-using Threax.AzureVmProvisioner.Resources;
 using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppStorage : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Create, "Create a storage account for the given app.")]
     record CreateAppStorage
     (
         ILogger<CreateAppStorage> logger,
-        EnvironmentConfiguration config,
         IArmTemplateManager armTemplateManager,
         IStorageManager storageManager,
         IKeyVaultAccessManager keyVaultAccessManager,
@@ -25,8 +22,13 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ICreateAppStorage
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var resources = config.Resources;
+            var azureKeyVaultConfig = config.KeyVault;
+            var azureStorageConfig = config.Storage;
+
             var resource = resources.Storage;
 
             if(resource == null)
@@ -38,16 +40,16 @@ namespace Threax.AzureVmProvisioner.Controller
 
             var nameCheck = azureStorageConfig.StorageAccount ?? throw new InvalidOperationException("You must provide a name for storage resources.");
 
-            var storage = new ArmStorageAccount(azureStorageConfig.StorageAccount, config.Location);
-            await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, storage);
+            var storage = new ArmStorageAccount(azureStorageConfig.StorageAccount, envConfig.Location);
+            await armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, storage);
 
             if (!String.IsNullOrWhiteSpace(resource.AccessKeySecretName))
             {
                 logger.LogInformation($"Setting up storage connection string '{resource.AccessKeySecretName}' in Key Vault '{azureKeyVaultConfig.VaultName}'.");
 
-                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
+                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, envConfig.UserId);
 
-                var accessKey = await storageManager.GetAccessKey(azureStorageConfig.StorageAccount, config.ResourceGroup);
+                var accessKey = await storageManager.GetAccessKey(azureStorageConfig.StorageAccount, envConfig.ResourceGroup);
 
                 if (accessKey == null)
                 {

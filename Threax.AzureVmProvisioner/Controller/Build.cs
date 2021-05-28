@@ -2,17 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
     interface IBuild : IController
     {
-        Task Run(BuildConfig buildConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Build the docker image for the app.")]
@@ -22,8 +19,10 @@ namespace Threax.AzureVmProvisioner.Controller
         IShellRunner shellRunner
     ) : IBuild
     {
-        public async Task Run(BuildConfig buildConfig)
+        public async Task Run(Configuration config)
         {
+            var buildConfig = config.Build;
+
             var context = buildConfig.GetContext();
             var dockerFile = Path.GetFullPath(Path.Combine(context, buildConfig.Dockerfile ?? throw new InvalidOperationException($"Please provide {nameof(buildConfig.Dockerfile)} when using build.")));
             var image = buildConfig.ImageName;

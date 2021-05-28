@@ -12,7 +12,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppCertificate : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Create, "Create a certificate for the app to use.")]
@@ -24,8 +24,12 @@ namespace Threax.AzureVmProvisioner.Controller
         IKeyVaultAccessManager keyVaultAccessManager
     ) : ICreateAppCertificate
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
+        public async Task Run(Configuration config)
         {
+            EnvironmentConfiguration envConfig = config.Environment;
+            ResourceConfiguration resources = config.Resources;
+            AzureKeyVaultConfig azureKeyVaultConfig = config.KeyVault;
+
             var resource = resources.Certificate;
 
             if(resource == null)
@@ -45,7 +49,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 throw new InvalidOperationException($"You must provide a value for '{nameof(Certificate.CN)}' in your '{nameof(Certificate)}' types.");
             }
 
-            await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
+            await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, envConfig.UserId);
 
             var existingCert = await keyVaultManager.GetCertificate(azureKeyVaultConfig.VaultName, resource.Name);
             if (existingCert == null)

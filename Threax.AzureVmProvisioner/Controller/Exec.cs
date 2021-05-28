@@ -16,7 +16,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IExec : IController
     {
-        Task Run(ResourceConfiguration resources);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Run an exec command against the app on the target server.")]
@@ -32,12 +32,12 @@ namespace Threax.AzureVmProvisioner.Controller
     {
         private const string FileType = "file";
 
-        public async Task Run(ResourceConfiguration resources)
+        public async Task Run(Configuration config)
         {
             var serverSideFilesToRemove = new List<String>();
             try
             {
-                var resource = resources.Compute;
+                var resource = config.Resources.Compute;
 
                 if (String.IsNullOrEmpty(resource.Name))
                 {
@@ -83,7 +83,7 @@ namespace Threax.AzureVmProvisioner.Controller
                     }
                 }
 
-                var fileName = Path.GetFileName(pathHelper.ConfigPath);
+                var fileName = Path.GetFileName(config.GetConfigPath());
                 await vmCommands.ThreaxDockerToolsExec($"/app/{resource.Name}/{fileName}", command, realArgs);
             }
             finally

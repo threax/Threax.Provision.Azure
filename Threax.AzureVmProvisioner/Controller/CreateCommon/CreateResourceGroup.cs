@@ -11,7 +11,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateResourceGroup : IController
     {
-        Task Run(EnvironmentConfiguration config);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.CreateCommon, "Create the app's resource group.")]
@@ -21,13 +21,15 @@ namespace Threax.AzureVmProvisioner.Controller
         IArmTemplateManager armTemplateManager
     ) : ICreateResourceGroup
     {
-        public async Task Run(EnvironmentConfiguration config)
+        public async Task Run(Configuration config)
         {
-            //Resource Group
-            logger.LogInformation($"Creating resource group '{config.ResourceGroup}'.");
+            var envConfig = config.Environment;
 
-            var armResourceGroup = new ArmResourceGroup(config.ResourceGroup);
-            await armTemplateManager.SubscriptionDeployment(config.Location, armResourceGroup);
+            //Resource Group
+            logger.LogInformation($"Creating resource group '{envConfig.ResourceGroup}'.");
+
+            var armResourceGroup = new ArmResourceGroup(envConfig.ResourceGroup);
+            await armTemplateManager.SubscriptionDeployment(envConfig.Location, armResourceGroup);
         }
     }
 }

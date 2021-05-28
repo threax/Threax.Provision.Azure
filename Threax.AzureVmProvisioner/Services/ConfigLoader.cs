@@ -10,35 +10,25 @@ namespace Threax.AzureVmProvisioner.Services
     interface IConfigLoader
     {
         /// <summary>
-        /// A JObject with the config loaded once. This is not suitable to modify since it will be shared with other components.
-        /// </summary>
-        public JObject SharedConfigInstance { get; }
-
-        /// <summary>
         /// Load the config. You will get a fresh JObject each time this is called, so the result is safe to modify.
         /// </summary>
         /// <returns></returns>
-        JObject LoadConfig();
+        JObject LoadConfig(String path);
     }
 
     class ConfigLoader : IConfigLoader
     {
         private const String IncludeKey = "$include";
-        private readonly string path;
-        private Lazy<JObject> config;
 
-        public ConfigLoader(string path)
+        public ConfigLoader()
         {
-            this.path = path;
-            config = new Lazy<JObject>(() => LoadConfig());
+            
         }
 
-        public JObject LoadConfig()
+        public JObject LoadConfig(String path)
         {
             return LoadWithInclude(path);
         }
-
-        public JObject SharedConfigInstance => config.Value;
 
         private static JObject LoadWithInclude(String path)
         {

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.ArmTemplates.KeyVault;
 using Threax.Provision.AzPowershell;
 
@@ -8,7 +7,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppVault : IController
     {
-        Task Run(EnvironmentConfiguration config, AzureKeyVaultConfig azureKeyVaultConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Create, "Create the key vault for the given app.")]
@@ -19,20 +18,23 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ICreateAppVault
     {
-        public async Task Run(EnvironmentConfiguration config, AzureKeyVaultConfig azureKeyVaultConfig)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var azureKeyVaultConfig = config.KeyVault;
+
             if (!String.IsNullOrEmpty(azureKeyVaultConfig.VaultName))
             {
                 if (!await keyVaultManager.Exists(azureKeyVaultConfig.VaultName))
                 {
-                    var keyVaultArm = new ArmKeyVault(azureKeyVaultConfig.VaultName, config.Location, config.TenantId.ToString());
-                    await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, keyVaultArm);
+                    var keyVaultArm = new ArmKeyVault(azureKeyVaultConfig.VaultName, envConfig.Location, envConfig.TenantId.ToString());
+                    await armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, keyVaultArm);
                 }
 
                 //Allow AzDo user in the key vault if one is set.
-                if (config.AzDoUser != null)
+                if (envConfig.AzDoUser != null)
                 {
-                    await keyVaultManager.UnlockSecretsRead(azureKeyVaultConfig.VaultName, config.AzDoUser.Value);
+                    await keyVaultManager.UnlockSecretsRead(azureKeyVaultConfig.VaultName, envConfig.AzDoUser.Value);
                 }
             }
         }

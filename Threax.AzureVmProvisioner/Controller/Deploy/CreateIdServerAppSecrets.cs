@@ -11,7 +11,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppSecrets : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Deploy, "Create the id server secrets for an app.")]
@@ -23,14 +23,19 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ICreateAppSecrets
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var resourceConfiguration = config.Resources;
+            var azureKeyVaultConfig = config.KeyVault;
+            var deploymentConfig = config.Deploy;
+
 
             var idReg = resourceConfiguration.IdServerRegistration;
             if (idReg != null)
             {
                 logger.LogInformation($"Configuring id server secrets for '{resourceConfiguration.Compute.Name}' in vault '{azureKeyVaultConfig.VaultName}' and in id server.");
-                await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, config.UserId);
+                await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.UserId);
                 switch (idReg.Type)
                 {
                     case IdServerRegistrationType.None:

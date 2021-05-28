@@ -12,7 +12,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IRegisterIdServer : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Deploy, "Register an app with the id server. This will update the secrets with the current vault values.")]
@@ -26,8 +26,12 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : IRegisterIdServer
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var resourceConfiguration = config.Resources;
+            var azureKeyVaultConfig = config.KeyVault;
+            var deploymentConfig = config.Deploy;
             var serverSideFilesToRemove = new List<String>();
             try
             {
@@ -35,7 +39,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 if (idReg != null)
                 {
                     logger.LogInformation($"Registering app '{resourceConfiguration.Compute.Name}' in id server on path '{idReg.IdServerPath}'.");
-                    await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, config.UserId);
+                    await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.UserId);
                     switch (idReg.Type)
                     {
                         case IdServerRegistrationType.None:
@@ -44,7 +48,7 @@ namespace Threax.AzureVmProvisioner.Controller
                             await SetupAppDashboard(serverSideFilesToRemove, resourceConfiguration, azureKeyVaultConfig);
                             break;
                         case IdServerRegistrationType.RegularApp:
-                            await SetupRegularApp(serverSideFilesToRemove, config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
+                            await SetupRegularApp(serverSideFilesToRemove, envConfig, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
                             break;
                         default:
                             throw new InvalidOperationException($"{nameof(IdServerRegistrationType)} '{idReg.Type}' not supported.");

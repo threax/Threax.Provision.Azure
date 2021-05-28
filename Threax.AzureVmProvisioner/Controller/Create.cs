@@ -8,7 +8,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreate : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Create all the resources for an individual app.")]
@@ -25,19 +25,19 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ICreate
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig)
+        public async Task Run(Configuration config)
         {
             logger.LogInformation("Creating app resources.");
 
-            await runInfoLogger.Log();
-            await CreateAppVault.Run(config, azureKeyVaultConfig);
+            await runInfoLogger.Log(config);
+            await CreateAppVault.Run(config);
             await Task.WhenAll
             (
-                CreateApp.Run(config, resources, azureKeyVaultConfig),
-                CreateAppSqlDatabase.Run(config, resources, azureKeyVaultConfig),
-                CreateAppStorage.Run(config, resources, azureKeyVaultConfig, azureStorageConfig),
-                CreateAppCertificate.Run(config, resources, azureKeyVaultConfig),
-                LoadExternalSecrets.Run(config, resources, azureKeyVaultConfig)
+                CreateApp.Run(config),
+                CreateAppSqlDatabase.Run(config),
+                CreateAppStorage.Run(config),
+                CreateAppCertificate.Run(config),
+                LoadExternalSecrets.Run(config)
             );
         }
     }

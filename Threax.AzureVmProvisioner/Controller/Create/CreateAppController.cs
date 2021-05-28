@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
-using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.Provision.AzPowershell;
 
@@ -11,7 +10,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateAppController : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Create, "Create the app's docker info on the compute instance.")]
@@ -26,8 +25,12 @@ namespace Threax.AzureVmProvisioner.Controller
         IPathHelper pathHelper
     ) : ICreateAppController
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
+            var resources = config.Resources;
+            var azureKeyVaultConfig = config.KeyVault;
+
             var resource = resources.Compute;
 
             if (resource == null)
@@ -43,11 +46,11 @@ namespace Threax.AzureVmProvisioner.Controller
                 var spName = $"{resource.Name}-app";
                 logger.LogInformation($"Managing service principal '{spName}'.");
 
-                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
+                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, envConfig.UserId);
 
                 if (!await servicePrincipalManager.Exists(spName))
                 {
-                    await CreateServicePrincipal(spName, config, azureKeyVaultConfig);
+                    await CreateServicePrincipal(spName, envConfig, azureKeyVaultConfig);
                 }
 
                 var id = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, "sp-id");
@@ -61,7 +64,7 @@ namespace Threax.AzureVmProvisioner.Controller
                         await servicePrincipalManager.Remove(spName);
                     }
 
-                    await CreateServicePrincipal(spName, config, azureKeyVaultConfig);
+                    await CreateServicePrincipal(spName, envConfig, azureKeyVaultConfig);
 
                     id = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, "sp-id");
                 }
@@ -71,19 +74,19 @@ namespace Threax.AzureVmProvisioner.Controller
                 logger.LogInformation("Setting app key vault connection string secret.");
                 var vaultCs = await keyVaultManager.GetSecret(azureKeyVaultConfig.VaultName, "sp-connectionstring");
 
-                var fileName = Path.GetFileName(pathHelper.ConfigPath);
+                var fileName = Path.GetFileName(config.GetConfigPath());
                 var serverConfigFilePath = $"/app/{resource.Name}/{fileName}";
 
-                await vmCommands.SetSecretFromString(config.VmName, config.ResourceGroup, pathHelper.ConfigPath, serverConfigFilePath, "serviceprincipal-cs", vaultCs);
+                await vmCommands.SetSecretFromString(envConfig.VmName, envConfig.ResourceGroup, config.GetConfigPath(), serverConfigFilePath, "serviceprincipal-cs", vaultCs);
             }
 
             //Setup App Insights
             if (!String.IsNullOrEmpty(resource.AppInsightsSecretName))
             {
-                logger.LogInformation($"Setting instrumentation key secret for App Insights '{config.AppInsightsName}' in Resource Group '{config.ResourceGroup}'");
+                logger.LogInformation($"Setting instrumentation key secret for App Insights '{envConfig.AppInsightsName}' in Resource Group '{envConfig.ResourceGroup}'");
 
-                var instrumentationKey = await appInsightsManager.GetAppInsightsInstrumentationKey(config.AppInsightsName, config.ResourceGroup);
-                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, config.UserId);
+                var instrumentationKey = await appInsightsManager.GetAppInsightsInstrumentationKey(envConfig.AppInsightsName, envConfig.ResourceGroup);
+                await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, envConfig.UserId);
                 await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.AppInsightsSecretName, instrumentationKey);
             }
         }

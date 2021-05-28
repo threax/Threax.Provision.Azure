@@ -12,7 +12,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IManageApp : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig, BuildConfig buildConfig, DeploymentConfig deploymentConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Do all steps needed to get an app up and running.")]
@@ -24,16 +24,16 @@ namespace Threax.AzureVmProvisioner.Controller
         IDeploy DeployController
     ) : IManageApp
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig, BuildConfig buildConfig, DeploymentConfig deploymentConfig)
+        public async Task Run(Configuration config)
         {
-            var create = CreateController.Run(config, resources, azureKeyVaultConfig, azureStorageConfig);
+            var create = CreateController.Run(config);
 
-            await CloneController.Run(buildConfig);
-            await BuildController.Run(buildConfig);
+            await CloneController.Run(config);
+            await BuildController.Run(config);
 
             await create;
 
-            await DeployController.Run(config, resources, buildConfig, azureKeyVaultConfig, deploymentConfig);
+            await DeployController.Run(config);
         }
     }
 }

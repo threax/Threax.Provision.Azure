@@ -11,7 +11,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ICreateInfraKeyVault : IController
     {
-        Task Run(EnvironmentConfiguration config);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.CreateCommon, "Create the common infrastructure key vault.")]
@@ -24,35 +24,36 @@ namespace Threax.AzureVmProvisioner.Controller
     )
      : ICreateInfraKeyVault
     {
-        public async Task Run(EnvironmentConfiguration config)
+        public async Task Run(Configuration config)
         {
+            var envConfig = config.Environment;
             //Key Vaults
-            logger.LogInformation($"Setting up infra key vault '{config.InfraKeyVaultName}'.");
+            logger.LogInformation($"Setting up infra key vault '{envConfig.InfraKeyVaultName}'.");
 
-            if (!await keyVaultManager.Exists(config.InfraKeyVaultName))
+            if (!await keyVaultManager.Exists(envConfig.InfraKeyVaultName))
             {
-                logger.LogInformation($"Creating infra key vault '{config.InfraKeyVaultName}'.");
+                logger.LogInformation($"Creating infra key vault '{envConfig.InfraKeyVaultName}'.");
 
-                var keyVaultArm = new ArmKeyVault(config.InfraKeyVaultName, config.Location, config.TenantId.ToString());
-                await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, keyVaultArm);
+                var keyVaultArm = new ArmKeyVault(envConfig.InfraKeyVaultName, envConfig.Location, envConfig.TenantId.ToString());
+                await armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, keyVaultArm);
             }
 
-            logger.LogInformation($"Setting up external key vault '{config.ExternalKeyVaultName}'.");
+            logger.LogInformation($"Setting up external key vault '{envConfig.ExternalKeyVaultName}'.");
 
-            if (!await keyVaultManager.Exists(config.ExternalKeyVaultName))
+            if (!await keyVaultManager.Exists(envConfig.ExternalKeyVaultName))
             {
-                logger.LogInformation($"Creating external key vault '{config.ExternalKeyVaultName}'.");
+                logger.LogInformation($"Creating external key vault '{envConfig.ExternalKeyVaultName}'.");
 
-                var keyVaultArm = new ArmKeyVault(config.ExternalKeyVaultName, config.Location, config.TenantId.ToString());
-                await armTemplateManager.ResourceGroupDeployment(config.ResourceGroup, keyVaultArm);
+                var keyVaultArm = new ArmKeyVault(envConfig.ExternalKeyVaultName, envConfig.Location, envConfig.TenantId.ToString());
+                await armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, keyVaultArm);
             }
 
             //Allow AzDo user in the key vault if one is set.
-            if (config.AzDoUser != null)
+            if (envConfig.AzDoUser != null)
             {
-                logger.LogInformation($"Adding AzDo user to infra key vault '{config.InfraKeyVaultName}'.");
+                logger.LogInformation($"Adding AzDo user to infra key vault '{envConfig.InfraKeyVaultName}'.");
 
-                await keyVaultManager.UnlockSecretsRead(config.InfraKeyVaultName, config.AzDoUser.Value);
+                await keyVaultManager.UnlockSecretsRead(envConfig.InfraKeyVaultName, envConfig.AzDoUser.Value);
             }
         }
     }

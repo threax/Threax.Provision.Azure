@@ -12,7 +12,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface ILoginAcr : IController
     {
-        Task Run(EnvironmentConfiguration config);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Log the machine running this app into the created ACR.")]
@@ -24,11 +24,13 @@ namespace Threax.AzureVmProvisioner.Controller
     )
     : ILoginAcr
     {
-        public async Task Run(EnvironmentConfiguration config)
+        public async Task Run(Configuration config)
         {
-            logger.LogInformation($"Logging into ACR '{config.AcrName}'.");
+            var envConfig = config.Environment;
 
-            var acrCreds = await acrManager.GetAcrCredential(config.AcrName, config.ResourceGroup);
+            logger.LogInformation($"Logging into ACR '{envConfig.AcrName}'.");
+
+            var acrCreds = await acrManager.GetAcrCredential(envConfig.AcrName, envConfig.ResourceGroup);
 
             var passwordPath = Path.GetTempFileName();
 
@@ -39,9 +41,9 @@ namespace Threax.AzureVmProvisioner.Controller
                     passwordStream.Write(acrCreds.Password);
                 }
 
-                var acrLoginUrl = $"{config.AcrName}.azurecr.io";
+                var acrLoginUrl = $"{envConfig.AcrName}.azurecr.io";
 
-                shellRunner.RunProcessVoid($"cat {passwordPath} | docker login {acrLoginUrl} --username {acrCreds.Username} --password-stdin", invalidExitCodeMessage: $"Error logging into ACR '{config.AcrName}'.");
+                shellRunner.RunProcessVoid($"cat {passwordPath} | docker login {acrLoginUrl} --username {acrCreds.Username} --password-stdin", invalidExitCodeMessage: $"Error logging into ACR '{envConfig.AcrName}'.");
             }
             finally
             {

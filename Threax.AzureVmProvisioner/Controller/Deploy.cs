@@ -15,7 +15,7 @@ namespace Threax.AzureVmProvisioner.Controller
 {
     interface IDeploy : IController
     {
-        Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig);
+        Task Run(Configuration config);
     }
 
     [HelpInfo(HelpCategory.Primary, "Deploy the docker image for the app.")]
@@ -32,8 +32,14 @@ namespace Threax.AzureVmProvisioner.Controller
         IRegisterIdServer registerIdServer
     ) : IDeploy
     {
-        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resourceConfiguration, BuildConfig buildConfig, AzureKeyVaultConfig azureKeyVaultConfig, DeploymentConfig deploymentConfig)
+        public async Task Run(Configuration config) 
         {
+            var envConfig = config.Environment;
+            var resourceConfiguration = config.Resources;
+            var buildConfig = config.Build;
+            var azureKeyVaultConfig = config.KeyVault;
+            var deploymentConfig = config.Deploy;
+        
             var resource = resourceConfiguration.Compute;
 
             if (resource == null)
@@ -49,7 +55,7 @@ namespace Threax.AzureVmProvisioner.Controller
             var image = buildConfig.ImageName;
             var currentTag = buildConfig.GetCurrentTag();
             var taggedImageName = imageManager.FindLatestImage(image, buildConfig.BaseTag, currentTag);
-            var finalTag = $"{config.AcrName.ToLowerInvariant()}.azurecr.io/{image}:{buildConfig.Branch}";
+            var finalTag = $"{envConfig.AcrName.ToLowerInvariant()}.azurecr.io/{image}:{buildConfig.Branch}";
 
             //Push
             logger.LogInformation($"Pushing '{image}' for branch '{buildConfig.Branch}'.");
@@ -58,11 +64,11 @@ namespace Threax.AzureVmProvisioner.Controller
 
             shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
 
-            await createAppSecrets.Run(config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
+            await createAppSecrets.Run(config);
 
             //Deploy
             logger.LogInformation($"Deploying '{image}' for branch '{buildConfig.Branch}'.");
-            var jobj = configLoader.LoadConfig(); //Get a fresh config copy
+            var jobj = configLoader.LoadConfig(config.GetConfigPath()); //Get a fresh config copy
 
             var deploy = jobj["Deploy"];
             if (deploy == null)
@@ -72,11 +78,11 @@ namespace Threax.AzureVmProvisioner.Controller
             }
             deploy["ImageName"] = finalTag;
 
-            var fileName = Path.GetFileName(pathHelper.ConfigPath);
+            var fileName = Path.GetFileName(config.GetConfigPath());
             var configJson = jobj.ToString(Newtonsoft.Json.Formatting.Indented);
             await vmCommands.ThreaxDockerToolsRun($"/app/{resource.Name}/{fileName}", configJson);
 
-            await registerIdServer.Run(config, resourceConfiguration, azureKeyVaultConfig, deploymentConfig);
+            await registerIdServer.Run(config);
         }
     }
 }
