@@ -11,16 +11,21 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateSql : IController
+    {
+        Task Run(EnvironmentConfiguration config);
+    }
+
+    [HelpInfo(HelpCategory.CreateCommon, "Create the common sql server and shared db instance for all apps to use.")]
     record CreateSql
     (
         ILogger<CreateSql> logger,
-        EnvironmentConfiguration config,
         IArmTemplateManager armTemplateManager,
         IKeyVaultAccessManager keyVaultAccessManager,
         ICredentialLookup credentialLookup
-    ) : IWorker<CreateSql>
+    ) : ICreateSql
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config)
         {
             //In this setup there is actually only 1 db to save money.
             //So both the sql server and the db will be provisioned in this step.

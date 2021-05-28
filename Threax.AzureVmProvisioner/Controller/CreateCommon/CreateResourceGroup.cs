@@ -9,14 +9,19 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateResourceGroup : IController
+    {
+        Task Run(EnvironmentConfiguration config);
+    }
+
+    [HelpInfo(HelpCategory.CreateCommon, "Create the app's resource group.")]
     record CreateResourceGroup
     (
         ILogger<CreateResourceGroup> logger,
-        EnvironmentConfiguration config,
         IArmTemplateManager armTemplateManager
-    ) : IWorker<CreateResourceGroup>
+    ) : ICreateResourceGroup
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config)
         {
             //Resource Group
             logger.LogInformation($"Creating resource group '{config.ResourceGroup}'.");

@@ -8,20 +8,23 @@ using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.Provision.AzPowershell;
 
-namespace Threax.AzureVmProvisioner.Workers
+namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICreateAppCertificate : IController
+    {
+        Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig);
+    }
+
+    [HelpInfo(HelpCategory.Create, "Create a certificate for the app to use.")]
     record CreateAppCertificate
     (
         ILogger<CreateAppCertificate> logger,
         IStringGenerator stringGenerator, 
         IKeyVaultManager keyVaultManager, 
-        EnvironmentConfiguration config, 
-        IKeyVaultAccessManager keyVaultAccessManager, 
-        AzureKeyVaultConfig azureKeyVaultConfig,
-        ResourceConfiguration resources
-    ) : IWorker<CreateAppCertificate>
+        IKeyVaultAccessManager keyVaultAccessManager
+    ) : ICreateAppCertificate
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config, ResourceConfiguration resources, AzureKeyVaultConfig azureKeyVaultConfig)
         {
             var resource = resources.Certificate;
 

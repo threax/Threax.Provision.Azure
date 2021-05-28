@@ -5,26 +5,32 @@ using Threax.AzureVmProvisioner.Workers;
 
 namespace Threax.AzureVmProvisioner.Controller
 {
+    interface ICreateCommonController : IController
+    {
+        Task Run(EnvironmentConfiguration config);
+    }
+
+    [HelpInfo(HelpCategory.Primary, "Create common resources needed by all apps.")]
     record CreateCommonController
     (
         ILogger<CreateCommonController> logger,
         IRunInfoLogger runInfoLogger,
-        IWorker<CreateResourceGroup> createResourceGroup,
-        IWorker<CreateInfraKeyVault> createInfraKeyVault,
-        IWorker<CreateVM> createVm,
-        IWorker<CreateSql> createSql
+        ICreateResourceGroup createResourceGroup,
+        ICreateInfraKeyVault createInfraKeyVault,
+        ICreateVM createVm,
+        ICreateSql createSql
     )
-    : IController
+    : ICreateCommonController
     {
-        public async Task Run()
+        public async Task Run(EnvironmentConfiguration config)
         {
             logger.LogInformation("Creating common resources.");
 
             await runInfoLogger.Log();
-            await createResourceGroup.ExecuteAsync();
-            await createInfraKeyVault.ExecuteAsync();
-            await createVm.ExecuteAsync();
-            await createSql.ExecuteAsync();
+            await createResourceGroup.Run(config);
+            await createInfraKeyVault.Run(config);
+            await createVm.Run(config);
+            await createSql.Run(config);
         }
     }
 }

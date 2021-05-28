@@ -83,8 +83,9 @@ namespace Threax.AzureVmProvisioner.Services
             if (publicKey == null)
             {
                 logger.LogInformation("Need to create ssh keypair. Please press enter to the prompts below.");
-                var outFile = Path.GetFullPath("newazurevm");
+                var outFile = Path.GetTempFileName();
                 var outPubFile = $"{outFile}.pub";
+                File.Delete(outFile);
                 try
                 {
                     shellRunner.RunProcessVoid($"ssh-keygen -t rsa -b 4096 -o -a 100 -f {outFile}",

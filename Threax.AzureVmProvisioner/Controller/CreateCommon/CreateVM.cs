@@ -11,19 +11,24 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateVM : IController
+    {
+        Task Run(EnvironmentConfiguration config);
+    }
+
+    [HelpInfo(HelpCategory.CreateCommon, "Create the common vm for apps to run on.")]
     record CreateVM
     (
         ILogger<CreateVM> logger,
-        EnvironmentConfiguration config,
         IArmTemplateManager armTemplateManager,
         IAcrManager acrManager,
         IKeyVaultAccessManager keyVaultAccessManager,
         ICredentialLookup credentialLookup,
         IVmCommands vmCommands,
         ISshCredsManager sshCredsManager
-    ) : IWorker<CreateVM>
+    ) : ICreateVM
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config)
         {
             logger.LogInformation("Creating common compute resources.");
 

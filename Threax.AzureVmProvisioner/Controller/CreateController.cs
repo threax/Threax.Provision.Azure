@@ -21,7 +21,7 @@ namespace Threax.AzureVmProvisioner.Controller
     (
         ILogger<CreateController> logger,
         IRunInfoLogger runInfoLogger,
-        IWorker<CreateAppCertificate> CreateAppCertificate,
+        ICreateAppCertificate CreateAppCertificate,
         ICreateAppController CreateApp,
         IWorker<CreateAppVault> CreateAppVault,
         IWorker<CreateAppSqlDatabase> CreateAppSqlDatabase,
@@ -39,7 +39,7 @@ namespace Threax.AzureVmProvisioner.Controller
             await CreateApp.Run(config, resources, azureKeyVaultConfig);
             await CreateAppSqlDatabase.ExecuteAsync();
             await CreateAppStorage.ExecuteAsync();
-            await CreateAppCertificate.ExecuteAsync();
+            await CreateAppCertificate.Run(config, resources, azureKeyVaultConfig);
             await LoadExternalSecrets.ExecuteAsync();
         }
     }

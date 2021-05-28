@@ -11,6 +11,7 @@ namespace Threax.AzureVmProvisioner
         Unknown,
         Primary,
         Create,
+        CreateCommon,
     }
 
     [AttributeUsage(AttributeTargets.Class)]
@@ -22,8 +23,8 @@ namespace Threax.AzureVmProvisioner
             this.Description = description;
         }
 
-        public String Description { get; private set; }
+        public HelpCategory Category { get; private set; }
 
-        public HelpCategory Category { get; set; }
+        public String Description { get; private set; }
     }
 }

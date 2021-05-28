@@ -9,17 +9,22 @@ using Threax.Provision.AzPowershell;
 
 namespace Threax.AzureVmProvisioner.Workers
 {
+    interface ICreateInfraKeyVault : IController
+    {
+        Task Run(EnvironmentConfiguration config);
+    }
+
+    [HelpInfo(HelpCategory.CreateCommon, "Create the common infrastructure key vault.")]
     record CreateInfraKeyVault
     (
         ILogger<CreateInfraKeyVault> logger,
-        EnvironmentConfiguration config,
         IArmTemplateManager armTemplateManager,
         IKeyVaultManager keyVaultManager,
         IKeyVaultAccessManager keyVaultAccessManager
     )
-     : IWorker<CreateInfraKeyVault>
+     : ICreateInfraKeyVault
     {
-        public async Task ExecuteAsync()
+        public async Task Run(EnvironmentConfiguration config)
         {
             //Key Vaults
             logger.LogInformation($"Setting up infra key vault '{config.InfraKeyVaultName}'.");
