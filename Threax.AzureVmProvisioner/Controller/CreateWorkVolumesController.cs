@@ -16,12 +16,10 @@ namespace Threax.AzureVmProvisioner.Controller
         IShellRunner shellRunner
     ) : ICreateWorkVolumesController
     {
-        public Task Run()
+        public async Task Run()
         {
-            shellRunner.RunProcessVoid($"docker volume create threax-provision-azurevm-home", "An error occured creating home volume.");
-            shellRunner.RunProcessVoid($"docker volume create threax-provision-azurevm-temp", "An error occured creating temp volume.");
-
-            return Task.CompletedTask;
+            await shellRunner.RunProcessVoidAsync($"docker volume create threax-provision-azurevm-home", "An error occured creating home volume.");
+            await shellRunner.RunProcessVoidAsync($"docker volume create threax-provision-azurevm-temp", "An error occured creating temp volume.");
         }
     }
 }

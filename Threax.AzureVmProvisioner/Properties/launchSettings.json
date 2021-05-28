@@ -30,6 +30,22 @@
       "commandName": "Docker",
       "commandLineArgs": "GetSsl /app/Example/env.json"
     },
+    "Manage Id": {
+      "commandName": "Docker",
+      "commandLineArgs": "ManageApp /app/Example/id/appsettings.json"
+    },
+    "Manage AppDashboard": {
+      "commandName": "Docker",
+      "commandLineArgs": "ManageApp /app/Example/appdashboard/appsettings.json"
+    },
+    "Manage Notes": {
+      "commandName": "Docker",
+      "commandLineArgs": "ManageApp /app/Example/notes/appsettings.json"
+    },
+    "Manage Nginx": {
+      "commandName": "Docker",
+      "commandLineArgs": "ManageApp /app/Example/nginx/appsettings.json"
+    },
     "Create Id": {
       "commandName": "Docker",
       "commandLineArgs": "Create /app/Example/id/appsettings.json"

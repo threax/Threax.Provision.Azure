@@ -22,7 +22,7 @@ namespace Threax.AzureVmProvisioner.Controller
         IShellRunner shellRunner
     ) : IBuildController
     {
-        public Task Run(BuildConfig buildConfig)
+        public async Task Run(BuildConfig buildConfig)
         {
             var context = buildConfig.GetContext();
             var dockerFile = Path.GetFullPath(Path.Combine(context, buildConfig.Dockerfile ?? throw new InvalidOperationException($"Please provide {nameof(buildConfig.Dockerfile)} when using build.")));
@@ -49,13 +49,11 @@ namespace Threax.AzureVmProvisioner.Controller
                 }
             }
 
-            var exitCode = shellRunner.RunProcessGetExit(command);
+            var exitCode = await shellRunner.RunProcessGetExitAsync(command);
             if (exitCode != 0)
             {
                 throw new InvalidOperationException("An error occured during the docker build.");
             }
-
-            return Task.CompletedTask;
         }
     }
 }

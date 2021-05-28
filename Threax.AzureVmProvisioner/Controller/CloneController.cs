@@ -23,23 +23,27 @@ namespace Threax.AzureVmProvisioner.Controller
     ) 
     : ICloneController
     {
-        public Task Run(BuildConfig appConfig)
+        public async Task Run(BuildConfig appConfig)
         {
+            if (String.IsNullOrEmpty(appConfig.RepoUrl))
+            {
+                logger.LogInformation($"No '{nameof(appConfig.RepoUrl)}' Not cloning anything for current app.");
+                return;
+            }
+
             var clonePath = Path.GetFullPath(appConfig.ClonePath);
             var repo = appConfig.RepoUrl;
 
             if (Directory.Exists(appConfig.ClonePath))
             {
                 logger.LogInformation($"Pulling changes to {clonePath}");
-                shellRunner.RunProcessVoid($"cd {appConfig.ClonePath};git pull", invalidExitCodeMessage: $"Error pulling repository '{clonePath}'.");
+                await shellRunner.RunProcessVoidAsync($"cd {appConfig.ClonePath};git pull", invalidExitCodeMessage: $"Error pulling repository '{clonePath}'.");
             }
             else
             {
                 logger.LogInformation($"Cloning {repo} to {clonePath}");
-                shellRunner.RunProcessVoid($"git clone {repo} {clonePath}", invalidExitCodeMessage: $"Error cloning repository '{repo}' to '{clonePath}'.");
+                await shellRunner.RunProcessVoidAsync($"git clone {repo} {clonePath}", invalidExitCodeMessage: $"Error cloning repository '{repo}' to '{clonePath}'.");
             }
-
-            return Task.CompletedTask;
         }
     }
 }

@@ -16,12 +16,10 @@ namespace Threax.AzureVmProvisioner.Controller
         IShellRunner shellRunner
     ) : IDestroyWorkVolumesController
     {
-        public Task Run()
+        public async Task Run()
         {
-            shellRunner.RunProcessVoid($"docker volume remove threax-provision-azurevm-home", "An error occured removing home volume.");
-            shellRunner.RunProcessVoid($"docker volume remove threax-provision-azurevm-temp", "An error occured removing temp volume.");
-
-            return Task.CompletedTask;
+            await shellRunner.RunProcessVoidAsync($"docker volume remove threax-provision-azurevm-home", "An error occured removing home volume.");
+            await shellRunner.RunProcessVoidAsync($"docker volume remove threax-provision-azurevm-temp", "An error occured removing temp volume.");
         }
     }
 }
