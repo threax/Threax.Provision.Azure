@@ -18,6 +18,14 @@
       "commandName": "Project",
       "commandLineArgs": "DestroyWorkVolumes"
     },
+    "Get Ssl Certificate": {
+      "commandName": "Docker",
+      "commandLineArgs": "GetSsl /app/Example/env.json"
+    },
+    "Full Deploy": {
+      "commandName": "Docker",
+      "commandLineArgs": "FullDeploy /app/Example /*/appsettings.json"
+    },
     "CreateCommon": {
       "commandName": "Docker",
       "commandLineArgs": "CreateCommon /app/Example /env.json"
@@ -25,10 +33,6 @@
     "LoginAcr": {
       "commandName": "Docker",
       "commandLineArgs": "LoginAcr /app/Example /env.json"
-    },
-    "Get Ssl Certificate": {
-      "commandName": "Docker",
-      "commandLineArgs": "GetSsl /app/Example/env.json"
     },
     "Manage All": {
       "commandName": "Docker",
