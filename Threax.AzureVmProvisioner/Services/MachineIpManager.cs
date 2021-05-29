@@ -18,32 +18,34 @@ namespace Threax.AzureVmProvisioner.Services
     {
         private readonly HttpClient httpClient;
         private readonly ILogger<MachineIpManager> logger;
-        private String ip;
+        private Lazy<Task<String>> ip;
 
         public MachineIpManager(HttpClient httpClient, ILogger<MachineIpManager> logger)
         {
             this.httpClient = httpClient;
             this.logger = logger;
+
+            ip = new Lazy<Task<string>>(() => DoGetExternalIp());
         }
 
-        public async Task<String> GetExternalIp()
+        public Task<String> GetExternalIp()
         {
-            if (ip == null)
-            {
-                var ipInfoHost = "http://ipinfo.io/json";
-                using (var result = await httpClient.GetAsync(ipInfoHost))
-                {
-                    if (!result.IsSuccessStatusCode)
-                    {
-                        throw new InvalidOperationException($"Could not get public ip from '{ipInfoHost}'.");
-                    }
-                    var json = await result.Content.ReadAsStringAsync();
-                    var jobj = JObject.Parse(json);
-                    ip = jobj["ip"]?.ToString();
-                }
-            }
+            return ip.Value;
+        }
 
-            return ip;
+        private async Task<String> DoGetExternalIp()
+        {
+            var ipInfoHost = "http://ipinfo.io/json";
+            using (var result = await httpClient.GetAsync(ipInfoHost))
+            {
+                if (!result.IsSuccessStatusCode)
+                {
+                    throw new InvalidOperationException($"Could not get public ip from '{ipInfoHost}'.");
+                }
+                var json = await result.Content.ReadAsStringAsync();
+                var jobj = JObject.Parse(json);
+                return jobj["ip"]?.ToString();
+            }
         }
     }
 }

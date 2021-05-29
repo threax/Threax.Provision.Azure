@@ -10,6 +10,17 @@ namespace Threax.AzureVmProvisioner.Resources
     class ResourceConfiguration
     {
         /// <summary>
+        /// The name of this deployment
+        /// </summary>
+        public String Name { get; set; }
+
+        /// <summary>
+        /// The name of the deployment this resource depends on. Will always be processed after that deployment
+        /// unless it is not loaded in the current set of include files.
+        /// </summary>
+        public String DependsOn { get; set; }
+
+        /// <summary>
         /// The configuration for the compute the resource runs on.
         /// </summary>
         public Compute Compute { get; set; }

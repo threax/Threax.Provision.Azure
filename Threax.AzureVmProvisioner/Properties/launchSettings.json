@@ -8,7 +8,7 @@
     },
     "Create Volumes": {
       "commandName": "Project",
-      "commandLineArgs": "CreateWorkVolumes $(ProjectDir)/Example/env.json"
+      "commandLineArgs": "CreateWorkVolumes"
     },
     "Login": {
       "commandName": "Docker",
@@ -16,15 +16,15 @@
     },
     "Destroy Volumes": {
       "commandName": "Project",
-      "commandLineArgs": "DestroyWorkVolumes $(ProjectDir)/Example/env.json"
+      "commandLineArgs": "DestroyWorkVolumes"
     },
     "CreateCommon": {
       "commandName": "Docker",
-      "commandLineArgs": "CreateCommon /app/Example/env.json"
+      "commandLineArgs": "CreateCommon /app/Example /env.json"
     },
     "LoginAcr": {
       "commandName": "Docker",
-      "commandLineArgs": "LoginAcr /app/Example/env.json"
+      "commandLineArgs": "LoginAcr /app/Example /env.json"
     },
     "Get Ssl Certificate": {
       "commandName": "Docker",
@@ -32,11 +32,11 @@
     },
     "Manage Nginx": {
       "commandName": "Docker",
-      "commandLineArgs": "ManageApp /app/Example/nginx/appsettings.json"
+      "commandLineArgs": "ManageApp /app/Example /nginx/appsettings.json"
     },
     "Manage Id": {
       "commandName": "Docker",
-      "commandLineArgs": "ManageApp /app/Example/id/appsettings.json"
+      "commandLineArgs": "ManageApp /app/Example /id/appsettings.json"
     },
     "Manage AppDashboard": {
       "commandName": "Docker",

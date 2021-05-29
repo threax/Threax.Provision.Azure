@@ -23,6 +23,8 @@ namespace Threax.AzureVmProvisioner.Services
 
     class SshCredsManager : IDisposable, ISshCredsManager
     {
+        record SshState(String publicKeyFile, String privateKeyFile, String vmUser) { }
+
         private const string SshRuleName = "SSH";
         private const string LFPlaceholder = "**lf**";
         private readonly EnvironmentConfiguration config;
@@ -33,11 +35,8 @@ namespace Threax.AzureVmProvisioner.Services
         private readonly IPathHelper appFolderFinder;
         private readonly ILogger<SshCredsManager> logger;
         private readonly IOSHandler osHandler;
-        private String publicKeyFile;
-        private String privateKeyFile;
-        private String sshKeyFolder;
-        private String vmUser;
-        private String sshHost;
+        private readonly Lazy<Task<String>> sshHostLookup;
+        private readonly Lazy<Task<SshState>> sshStateLoad;
 
         public SshCredsManager(EnvironmentConfiguration config,
             IKeyVaultManager keyVaultManager,
@@ -56,12 +55,19 @@ namespace Threax.AzureVmProvisioner.Services
             this.appFolderFinder = appFolderFinder;
             this.logger = logger;
             this.osHandler = osHandler;
+
+            sshHostLookup = new Lazy<Task<string>>(() => vmManager.GetPublicIp(config.PublicIpName));
+            sshStateLoad = new Lazy<Task<SshState>>(() => LoadSshState());
         }
 
         public void Dispose()
         {
-            if (!string.IsNullOrEmpty(publicKeyFile))
+            if (sshStateLoad.IsValueCreated)
             {
+                var state = sshStateLoad.Value.GetAwaiter().GetResult();
+                var publicKeyFile = state.publicKeyFile;
+                var privateKeyFile = state.privateKeyFile;
+
                 try
                 {
                     File.Delete(publicKeyFile);
@@ -160,11 +166,10 @@ namespace Threax.AzureVmProvisioner.Services
         {
             //Commands run here are not escaped, TODO: Escape ssh commands
 
-            await EnsureSshHost();
-
-            var privateKeyPath = await LoadKeysAndGetSshPrivateKeyPath();
-            var sshConnection = $"{vmUser}@{sshHost}";
-            return await shellRunner.RunProcessGetExitAsync($"ssh -i {privateKeyPath} -t {sshConnection} {command}");
+            var sshHost = await sshHostLookup.Value;
+            var sshState = await sshStateLoad.Value;
+            var sshConnection = $"{sshState.vmUser}@{sshHost}";
+            return await shellRunner.RunProcessGetExitAsync($"ssh -i {sshState.privateKeyFile} -t {sshConnection} {command}");
         }
 
         public async Task CopyStringToSshFile(string input, string dest)
@@ -172,12 +177,12 @@ namespace Threax.AzureVmProvisioner.Services
             var path = Path.GetTempFileName();
             try
             {
-                await EnsureSshHost();
+                var sshHost = await sshHostLookup.Value;
                 File.WriteAllText(path, input);
 
-                var privateKeyPath = await LoadKeysAndGetSshPrivateKeyPath();
-                var finalDest = $"{vmUser}@{sshHost}:{dest}";
-                await shellRunner.RunProcessVoidAsync($"scp -i {privateKeyPath} {path} {finalDest}",
+                var sshState = await sshStateLoad.Value;
+                var finalDest = $"{sshState.vmUser}@{sshHost}:{dest}";
+                await shellRunner.RunProcessVoidAsync($"scp -i {sshState.privateKeyFile} {path} {finalDest}",
                     invalidExitCodeMessage: $"Error running command scp for '{path}' to '{dest}'.");
             }
             finally
@@ -186,7 +191,7 @@ namespace Threax.AzureVmProvisioner.Services
                 {
                     File.Delete(path);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     logger.LogError($"{ex.GetType().Name} deleting temp secret file '{path}'.");
                 }
@@ -195,17 +200,16 @@ namespace Threax.AzureVmProvisioner.Services
 
         public async Task CopySshFile(String file, String dest)
         {
-            await EnsureSshHost();
-
-            var privateKeyPath = await LoadKeysAndGetSshPrivateKeyPath();
-            var finalDest = $"{vmUser}@{sshHost}:{dest}";
-            await shellRunner.RunProcessVoidAsync($"scp -i {privateKeyPath} {file} {finalDest}",
+            var sshHost = await sshHostLookup.Value;
+            var sshState = await sshStateLoad.Value;
+            var finalDest = $"{sshState.vmUser}@{sshHost}:{dest}";
+            await shellRunner.RunProcessVoidAsync($"scp -i {sshState.privateKeyFile} {file} {finalDest}",
                 invalidExitCodeMessage: $"Error running command scp for '{file}' to '{dest}'.");
         }
 
         public async Task SaveSshKnownHostsSecret()
         {
-            await EnsureSshHost();
+            var sshHost = await sshHostLookup.Value;
             await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow");
             String key;
             int retry = 0;
@@ -242,80 +246,69 @@ namespace Threax.AzureVmProvisioner.Services
 
         public String PrivateKeySecretName => $"{config.VmAdminBaseKey}-ssh-private-key";
 
-        private async Task<String> LoadKeysAndGetSshPrivateKeyPath()
+        private async Task<SshState> LoadSshState()
         {
-            if (privateKeyFile == null)
+            await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow");
+            var sshKeyFolder = Path.Combine(appFolderFinder.AppUserFolder, "sshkeys");
+            if (!Directory.Exists(sshKeyFolder))
             {
-                await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow");
-                sshKeyFolder = Path.Combine(appFolderFinder.AppUserFolder, "sshkeys");
-                if (!Directory.Exists(sshKeyFolder))
-                {
-                    Directory.CreateDirectory(sshKeyFolder);
-                }
-
-                publicKeyFile = Path.Combine(sshKeyFolder, "azure-ssh.pub");
-                privateKeyFile = Path.Combine(sshKeyFolder, "azure-ssh");
-
-                await EnsureSshHost();
-                var knownHostsFile = Path.Combine(appFolderFinder.UserSshFolder, "known_hosts");
-                if (!File.Exists(knownHostsFile))
-                {
-                    var knownHostsPath = Path.GetDirectoryName(knownHostsFile);
-                    if (!Directory.Exists(knownHostsPath))
-                    {
-                        Directory.CreateDirectory(knownHostsPath);
-                    }
-                    using var stream = File.Create(knownHostsFile);
-                    //throw new InvalidOperationException($"Please create an ssh profile at '{knownHostsFile}'.");
-                }
-
-                var key = await keyVaultManager.GetSecret(config.InfraKeyVaultName, config.SshKnownHostKey);
-                var currentKeys = File.ReadAllText(knownHostsFile);
-                if (!currentKeys.Contains(key))
-                {
-                    File.AppendAllText(knownHostsFile, key);
-                }
-
-                var publicKey = UnpackKey(await keyVaultManager.GetSecret(config.InfraKeyVaultName, PublicKeySecretName));
-                var privateKey = UnpackKey(await keyVaultManager.GetSecret(config.InfraKeyVaultName, PrivateKeySecretName));
-
-                File.WriteAllText(publicKeyFile, publicKey);
-                File.WriteAllText(privateKeyFile, privateKey);
-
-                osHandler.SetPermissions(publicKeyFile, "root", "root");
-                osHandler.SetPermissions(privateKeyFile, "root", "root");
-
-                var creds = await credentialLookup.GetCredentials(config.InfraKeyVaultName, config.VmAdminBaseKey);
-                vmUser = creds.User;
-
-                //Validate that access has been granted
-                int exitCode;
-                int retry = 0;
-                do
-                {
-                    logger.LogInformation($"Trying connection to '{sshHost}'. Retry '{retry}'.");
-                    var sshConnection = $"{vmUser}@{sshHost}";
-
-                    //Run a simple command to verify the connection.
-                    exitCode = shellRunner.RunProcessGetExit($"ssh -i {privateKeyFile} -t {sshConnection} \"pwd\"");
-
-                    if (++retry > 100)
-                    {
-                        throw new InvalidOperationException($"Could not establish connection to ssh host '{sshHost}' after '{retry}' retries. Giving up.");
-                    }
-
-                } while (exitCode != 0);
+                Directory.CreateDirectory(sshKeyFolder);
             }
 
-            return privateKeyFile;
-        }
+            var publicKeyFile = Path.Combine(sshKeyFolder, "azure-ssh.pub");
+            var privateKeyFile = Path.Combine(sshKeyFolder, "azure-ssh");
 
-        private async Task EnsureSshHost()
-        {
-            if (sshHost == null)
+            var sshHost = await sshHostLookup.Value;
+            var knownHostsFile = Path.Combine(appFolderFinder.UserSshFolder, "known_hosts");
+            if (!File.Exists(knownHostsFile))
             {
-                sshHost = await vmManager.GetPublicIp(config.PublicIpName);
+                var knownHostsPath = Path.GetDirectoryName(knownHostsFile);
+                if (!Directory.Exists(knownHostsPath))
+                {
+                    Directory.CreateDirectory(knownHostsPath);
+                }
+                using var stream = File.Create(knownHostsFile);
+                //throw new InvalidOperationException($"Please create an ssh profile at '{knownHostsFile}'.");
             }
+
+            var key = await keyVaultManager.GetSecret(config.InfraKeyVaultName, config.SshKnownHostKey);
+            var currentKeys = File.ReadAllText(knownHostsFile);
+            if (!currentKeys.Contains(key))
+            {
+                File.AppendAllText(knownHostsFile, key);
+            }
+
+            var publicKey = UnpackKey(await keyVaultManager.GetSecret(config.InfraKeyVaultName, PublicKeySecretName));
+            var privateKey = UnpackKey(await keyVaultManager.GetSecret(config.InfraKeyVaultName, PrivateKeySecretName));
+
+            File.WriteAllText(publicKeyFile, publicKey);
+            File.WriteAllText(privateKeyFile, privateKey);
+
+            osHandler.SetPermissions(publicKeyFile, "root", "root");
+            osHandler.SetPermissions(privateKeyFile, "root", "root");
+
+            var creds = await credentialLookup.GetCredentials(config.InfraKeyVaultName, config.VmAdminBaseKey);
+            var vmUser = creds.User;
+
+            //Validate that access has been granted
+            int exitCode;
+            int retry = 0;
+            do
+            {
+                logger.LogInformation($"Trying connection to '{sshHost}'. Retry '{retry}'.");
+                var sshConnection = $"{vmUser}@{sshHost}";
+
+                //Run a simple command to verify the connection.
+                exitCode = await shellRunner.RunProcessGetExitAsync($"ssh -i {privateKeyFile} -t {sshConnection} \"pwd\"");
+
+                if (++retry > 100)
+                {
+                    throw new InvalidOperationException($"Could not establish connection to ssh host '{sshHost}' after '{retry}' retries. Giving up.");
+                }
+
+            } while (exitCode != 0);
+
+            return new SshState(publicKeyFile, privateKeyFile, vmUser);
         }
 
         private static string PackKey(string key)

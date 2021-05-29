@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Resources;
 using Threax.DeployConfig;
@@ -43,5 +39,5 @@ namespace Threax.AzureVmProvisioner
         public BuildConfig Build { get; set; }
 
         public DeploymentConfig Deploy { get; set; }
-}
+    }
 }

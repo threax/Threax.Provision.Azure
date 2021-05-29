@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Threax.Provision.AzPowershell
@@ -10,6 +11,7 @@ namespace Threax.Provision.AzPowershell
     {
         private readonly ISqlServerManager sqlServerManager;
         private List<FirewallRuleInfo> createdRules = new List<FirewallRuleInfo>();
+        private SemaphoreSlim ruleLock = new SemaphoreSlim(1, 1);
 
         public SqlServerFirewallRuleManager(ISqlServerManager sqlServerManager)
         {
@@ -18,19 +20,30 @@ namespace Threax.Provision.AzPowershell
 
         public async Task Unlock(String serverName, String resourceGroupName, String startIp, String endIp)
         {
-            //If this rule is already created, skip it
-            if(createdRules.Any(i => i.ServerName == serverName && i.ResourceGroupName == resourceGroupName && i.StartIp == startIp && i.EndIp == endIp))
+            var ruleName = Guid.NewGuid().ToString();
+
+            try
             {
-                return;
+                await ruleLock.WaitAsync();
+                //If this rule is already created, skip it
+                if (createdRules.Any(i => i.ServerName == serverName && i.ResourceGroupName == resourceGroupName && i.StartIp == startIp && i.EndIp == endIp))
+                {
+                    return;
+                }
+
+                this.createdRules.Add(new FirewallRuleInfo(serverName, resourceGroupName, ruleName, startIp, endIp));
+            }
+            finally
+            {
+                ruleLock.Release();
             }
 
-            var ruleName = Guid.NewGuid().ToString();
             await sqlServerManager.SetFirewallRule(ruleName, serverName, resourceGroupName, startIp, endIp);
-            this.createdRules.Add(new FirewallRuleInfo(serverName, resourceGroupName, ruleName, startIp, endIp));
         }
 
         public void Dispose()
         {
+            ruleLock.Dispose();
             var ruleTasks = createdRules.Select(i => Task.Run(() => this.sqlServerManager.RemoveFirewallRule(i.RuleName, i.ServerName, i.ResourceGroupName))).ToList();
             foreach (var task in ruleTasks)
             {

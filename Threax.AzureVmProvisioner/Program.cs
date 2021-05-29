@@ -1,18 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
-using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.Controller;
-using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
 using Threax.ConsoleApp;
-using Threax.DeployConfig;
-using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
 
 namespace Threax.AzureVmProvisioner
@@ -22,6 +19,8 @@ namespace Threax.AzureVmProvisioner
         public static Task<int> Main(string[] args)
         {
             string command = args.Length > 0 ? args[0] : null;
+            var rootDir = args.Length > 1 ? args[1] : null;
+            var includeGlob = args.Length > 2 ? args[2] : null;
 
             return AppHost
             .Setup<IController, Help>(command, services =>
@@ -30,22 +29,11 @@ namespace Threax.AzureVmProvisioner
 
                 services.AddSingleton<IPathHelper, PathHelper>();
                 services.AddSingleton<IConfigLoader, ConfigLoader>();
+                services.AddSingleton<IConfigProvider, ConfigProvider>();
 
-                services.AddSingleton<Configuration>(s =>
-                {
-                    var configPath = args.Length > 1 ? args[1] : throw new InvalidOperationException("No config file path provided.");
-                    var result = new Configuration(configPath);
-                    var configLoader = s.GetRequiredService<IConfigLoader>();
-                    var config = configLoader.LoadConfig(configPath);
-                    if (config != null)
-                    {
-                        using var reader = config.CreateReader();
-                        Newtonsoft.Json.JsonSerializer.CreateDefault().Populate(reader, result);
-                    }
-                    return result;
-                });
-
-                services.AddSingleton<EnvironmentConfiguration>(s => s.GetRequiredService<Configuration>().Environment);
+                //Use the first defined environment as the environment
+                //It should always be the same in all files
+                services.AddSingleton<EnvironmentConfiguration>(s => s.GetRequiredService<IConfigProvider>().LoadConfigPhases(rootDir, includeGlob).First().First().Environment);
 
                 services.AddSingleton<RandomNumberGenerator>(services => RandomNumberGenerator.Create());
 
@@ -95,7 +83,7 @@ namespace Threax.AzureVmProvisioner
 
                 RegisterControllers(services, typeof(Program).Assembly);
             })
-            .Run((c, s) =>
+            .Run(async (c, s) =>
             {
                 var type = c.GetType();
                 var runFunc = type.GetMethod("Run");
@@ -104,14 +92,31 @@ namespace Threax.AzureVmProvisioner
                     throw new InvalidOperationException($"Cannot find a 'Run' function on type '{type.FullName}'");
                 }
 
-                var parms = runFunc.GetParameters()
-                    .Select(i =>
-                    {
-                        return s.ServiceProvider.GetRequiredService(i.ParameterType);
-                    })
-                    .ToArray();
+                //var parms = 
+                //    .Select(i =>
+                //    {
+                //        return s.ServiceProvider.GetRequiredService(i.ParameterType);
+                //    })
+                //    .ToArray();
 
-                return runFunc.Invoke(c, parms) as Task;
+                if (runFunc.GetParameters().Any(i => i.ParameterType == typeof(Configuration)))
+                {
+                    var configProvider = s.ServiceProvider.GetRequiredService<IConfigProvider>();
+                    foreach (var configs in configProvider.LoadConfigPhases(rootDir, includeGlob))
+                    {
+                        var taskList = new List<Task>();
+                        foreach (var config in configs)
+                        {
+                            var parms = new Object[] { config };
+                            taskList.Add(runFunc.Invoke(c, parms) as Task);
+                        }
+                        await Task.WhenAll(taskList);
+                    }
+                }
+                else
+                {
+                    await (runFunc.Invoke(c, null) as Task);
+                }
             });
         }
 
