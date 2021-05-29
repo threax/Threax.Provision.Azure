@@ -30,6 +30,10 @@
       "commandName": "Docker",
       "commandLineArgs": "GetSsl /app/Example/env.json"
     },
+    "Manage All": {
+      "commandName": "Docker",
+      "commandLineArgs": "ManageApp /app/Example /*/appsettings.json"
+    },
     "Manage Nginx": {
       "commandName": "Docker",
       "commandLineArgs": "ManageApp /app/Example /nginx/appsettings.json"

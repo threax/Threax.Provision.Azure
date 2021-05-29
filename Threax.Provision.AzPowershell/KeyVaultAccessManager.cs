@@ -29,14 +29,13 @@ namespace Threax.Provision.AzPowershell
                 {
                     return;
                 }
+                await keyVaultManager.UnlockSecrets(keyVaultName, userId);
                 this.createdRules.Add(new KeyVaultRuleInfo(keyVaultName, userId));
             }
             finally
             {
                 ruleLock.Release();
             }
-
-            await keyVaultManager.UnlockSecrets(keyVaultName, userId);
         }
 
         public void Dispose()

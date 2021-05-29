@@ -31,14 +31,13 @@ namespace Threax.Provision.AzPowershell
                     return;
                 }
 
+                await sqlServerManager.SetFirewallRule(ruleName, serverName, resourceGroupName, startIp, endIp);
                 this.createdRules.Add(new FirewallRuleInfo(serverName, resourceGroupName, ruleName, startIp, endIp));
             }
             finally
             {
                 ruleLock.Release();
             }
-
-            await sqlServerManager.SetFirewallRule(ruleName, serverName, resourceGroupName, startIp, endIp);
         }
 
         public void Dispose()
