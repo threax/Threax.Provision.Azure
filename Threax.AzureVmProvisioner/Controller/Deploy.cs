@@ -37,8 +37,6 @@ namespace Threax.AzureVmProvisioner.Controller
             var envConfig = config.Environment;
             var resourceConfiguration = config.Resources;
             var buildConfig = config.Build;
-            var azureKeyVaultConfig = config.KeyVault;
-            var deploymentConfig = config.Deploy;
         
             var resource = resourceConfiguration.Compute;
 
