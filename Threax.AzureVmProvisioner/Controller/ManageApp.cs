@@ -21,6 +21,7 @@ namespace Threax.AzureVmProvisioner.Controller
         ICreate CreateController,
         IClone CloneController,
         IBuild BuildController,
+        IPush Push,
         IDeploy DeployController
     ) : IManageApp
     {
@@ -30,6 +31,7 @@ namespace Threax.AzureVmProvisioner.Controller
 
             await CloneController.Run(config);
             await BuildController.Run(config);
+            await Push.Run(config);
 
             await create;
 

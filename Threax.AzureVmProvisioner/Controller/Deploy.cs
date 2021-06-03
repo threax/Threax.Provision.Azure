@@ -3,11 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Threax.Azure.Abstractions;
-using Threax.AzureVmProvisioner.Resources;
 using Threax.AzureVmProvisioner.Services;
-using Threax.DeployConfig;
-using Threax.DockerBuildConfig;
 using Threax.ProcessHelper;
 using Threax.Provision.AzPowershell;
 
@@ -51,18 +47,7 @@ namespace Threax.AzureVmProvisioner.Controller
             }
 
             var image = buildConfig.ImageName;
-            var currentTag = buildConfig.GetCurrentTag();
-            var taggedImageName = imageManager.FindLatestImage(image, buildConfig.BaseTag, currentTag);
             var finalTag = $"{envConfig.AcrName.ToLowerInvariant()}.azurecr.io/{image}:{buildConfig.Branch}";
-
-            //Push
-            logger.LogInformation($"Pushing '{image}' for branch '{buildConfig.Branch}'.");
-
-            shellRunner.RunProcessVoid($"docker tag {taggedImageName} {finalTag}", invalidExitCodeMessage: "An error occured during the docker tag.");
-
-            shellRunner.RunProcessVoid($"docker push {finalTag}", invalidExitCodeMessage: "An error occured during the docker push.");
-
-            await createAppSecrets.Run(config);
 
             //Deploy
             logger.LogInformation($"Deploying '{image}' for branch '{buildConfig.Branch}'.");

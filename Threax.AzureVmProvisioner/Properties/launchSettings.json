@@ -64,11 +64,15 @@
     },
     "Build Id": {
       "commandName": "Docker",
-      "commandLineArgs": "Build /app/Example/id/appsettings.json"
+      "commandLineArgs": "Build /app/Example/id /appsettings.json"
+    },
+    "Push Id": {
+      "commandName": "Docker",
+      "commandLineArgs": "Push /app/Example/id /appsettings.json"
     },
     "Deploy Id": {
       "commandName": "Docker",
-      "commandLineArgs": "Deploy /app/Example/id/appsettings.json"
+      "commandLineArgs": "Deploy /app/Example/id /appsettings.json"
     },
     "Create AppDashboard": {
       "commandName": "Docker",
