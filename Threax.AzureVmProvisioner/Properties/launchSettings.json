@@ -12,7 +12,7 @@
     },
     "Login": {
       "commandName": "Docker",
-      "commandLineArgs": "Login /app/Example/env.json"
+      "commandLineArgs": "Login /app/Example /env.json"
     },
     "Destroy Volumes": {
       "commandName": "Project",

@@ -130,5 +130,10 @@ namespace Threax.AzureVmProvisioner
         /// The name of the secret that stores teh ssl cert private key in the key vault. Default: ssl-private-key
         /// </summary>
         public String SslPrivateKeyName { get; set; } = "ssl-private-key";
+
+        /// <summary>
+        /// The name of the Azure Devops account to use. This is optional, but any commands using VSTeam will fail without it.
+        /// </summary>
+        public String AzDoAccount { get; set; }
     }
 }

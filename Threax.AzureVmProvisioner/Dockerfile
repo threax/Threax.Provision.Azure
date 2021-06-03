@@ -17,6 +17,9 @@ RUN apt-get install -y powershell
 #Install Az Powershell
 RUN pwsh -c Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -RequiredVersion 6.0.0
 
+#Install VSTeam
+RUN pwsh -c Install-Module -Name VSTeam -Scope CurrentUser -Repository PSGallery -Force -RequiredVersion 7.2.0
+
 # Install Openssh
 RUN apt-get install -y openssh-client
 
