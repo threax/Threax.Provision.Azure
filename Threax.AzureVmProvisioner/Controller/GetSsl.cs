@@ -59,11 +59,9 @@ namespace Threax.AzureVmProvisioner.Controller
                 script = script.Replace("REPLACE_OUT_FILE", certInfoFile);
                 File.WriteAllText(authHookTempPath, script);
                 OSHandler.MakeExecutable(authHookTempPath);
-                //var server = "--staging --server https://acme-staging-v02.api.letsencrypt.org/directory";
-                //server = "--server https://acme-v02.api.letsencrypt.org/directory";
-
-                //THIS IS STAGING STILL
-                var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                
+                //"--staging --server https://acme-staging-v02.api.letsencrypt.org/directory";
+                var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
 
                 var timeout = 10;
                 while (!File.Exists(certInfoFile))
