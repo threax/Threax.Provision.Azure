@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Threax.AzureVmProvisioner.Services;
@@ -18,7 +20,8 @@ namespace Threax.AzureVmProvisioner.Controller
         IPathHelper PathHelper,
         IShellRunner ShellRunner,
         IKeyVaultManager KeyVaultManager,
-        IOSHandler OSHandler
+        IOSHandler OSHandler,
+        ILogger<GetSsl> Logger
     ) 
     : IGetSsl
     {
@@ -52,13 +55,33 @@ namespace Threax.AzureVmProvisioner.Controller
                 var authHookPath = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location), "Services", "WatchCert.sh");
                 var authHookTempPath = Path.Combine(certTempPath, "auth-hook.sh");
                 var script = File.ReadAllText(authHookPath);
-                script = script.Replace("REPLACE_OUT_FILE", Path.Combine(certTempPath, "CertInfo.txt"));
+                var certInfoFile = Path.Combine(certTempPath, "CertInfo.json");
+                script = script.Replace("REPLACE_OUT_FILE", certInfoFile);
                 File.WriteAllText(authHookTempPath, script);
                 OSHandler.MakeExecutable(authHookTempPath);
                 //var server = "--staging --server https://acme-staging-v02.api.letsencrypt.org/directory";
                 //server = "--server https://acme-v02.api.letsencrypt.org/directory";
 
-                ShellRunner.RunProcessVoid($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                //THIS IS STAGING STILL
+                var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+
+                var timeout = 10;
+                while (!File.Exists(certInfoFile))
+                {
+                    await Task.Delay(300);
+                    if(--timeout < 0)
+                    {
+                        throw new InvalidOperationException($"Could not find file '{certInfoFile}' that the hook script should have created, but didn't.");
+                    }
+                }
+
+                var json = File.ReadAllText(certInfoFile);
+                dynamic data = JObject.Parse(json);
+
+                Logger.LogInformation($"Certificate lookup url is '{data.url}'");
+                Logger.LogInformation($"Certificate validation '{data.validation}'");
+
+                await certTask;
 
                 var finalCertPath = Path.Combine(certTempPath, "archive", baseUrl);
                 var publicKeyPath = Path.Combine(finalCertPath, "fullchain1.pem");
