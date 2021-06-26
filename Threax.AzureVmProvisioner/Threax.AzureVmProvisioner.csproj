@@ -34,6 +34,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Services\WatchCert.sh">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Services\UbuntuSetup.sh">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

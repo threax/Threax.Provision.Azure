@@ -23,5 +23,11 @@ namespace Threax.AzureVmProvisioner.Services
         /// <param name="user"></param>
         /// <param name="group"></param>
         void SetPermissions(string path, string user, string group);
+
+        /// <summary>
+        /// Make the file at the given path executable.
+        /// </summary>
+        /// <param name="path"></param>
+        void MakeExecutable(string path);
     }
 }

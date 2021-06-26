@@ -15,5 +15,10 @@ namespace Threax.AzureVmProvisioner.Services
         {
 
         }
+
+        public void MakeExecutable(string path)
+        {
+
+        }
     }
 }

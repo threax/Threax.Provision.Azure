@@ -20,7 +20,7 @@
     },
     "Get Ssl Certificate": {
       "commandName": "Docker",
-      "commandLineArgs": "GetSsl /app/Example/env.json"
+      "commandLineArgs": "GetSsl /app/Example /env.json"
     },
     "Full Deploy": {
       "commandName": "Docker",

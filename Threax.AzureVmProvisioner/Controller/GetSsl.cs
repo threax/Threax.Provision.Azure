@@ -17,7 +17,8 @@ namespace Threax.AzureVmProvisioner.Controller
     (
         IPathHelper PathHelper,
         IShellRunner ShellRunner,
-        IKeyVaultManager KeyVaultManager
+        IKeyVaultManager KeyVaultManager,
+        IOSHandler OSHandler
     ) 
     : IGetSsl
     {
@@ -47,7 +48,17 @@ namespace Threax.AzureVmProvisioner.Controller
             try
             {
                 //Get cert with certbot container
-                ShellRunner.RunProcessVoid($"docker run -it --rm -v {certTempPath}:/etc/letsencrypt certbot/certbot certonly --manual --server https://acme-v02.api.letsencrypt.org/directory --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                //docker run -it --rm -v {certTempPath}:/etc/letsencrypt certbot/certbot
+                var authHookPath = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location), "Services", "WatchCert.sh");
+                var authHookTempPath = Path.Combine(certTempPath, "auth-hook.sh");
+                var script = File.ReadAllText(authHookPath);
+                script = script.Replace("REPLACE_OUT_FILE", Path.Combine(certTempPath, "CertInfo.txt"));
+                File.WriteAllText(authHookTempPath, script);
+                OSHandler.MakeExecutable(authHookTempPath);
+                //var server = "--staging --server https://acme-staging-v02.api.letsencrypt.org/directory";
+                //server = "--server https://acme-v02.api.letsencrypt.org/directory";
+
+                ShellRunner.RunProcessVoid($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
 
                 var finalCertPath = Path.Combine(certTempPath, "archive", baseUrl);
                 var publicKeyPath = Path.Combine(finalCertPath, "fullchain1.pem");
