@@ -44,11 +44,11 @@ namespace Threax.AzureVmProvisioner.Controller
                     throw new InvalidOperationException("You must include a resource 'Name' property to deploy compute.");
                 }
 
-                var command = argsProvider.Args[2];
+                var command = argsProvider.Args[3];
 
                 logger.LogInformation($"Running exec command '{command}' on remote server.");
 
-                var args = argsProvider.Args.Skip(3).ToArray();
+                var args = argsProvider.Args.Skip(4).ToArray();
 
                 var realArgs = new List<String>();
                 var i = -1;

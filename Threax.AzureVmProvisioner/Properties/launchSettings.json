@@ -108,7 +108,7 @@
     },
     "Exec Id AddAdmin": {
       "commandName": "Docker",
-      "commandLineArgs": "Exec /app/Example/id/appsettings.json AddAdmin REPLACE"
+      "commandLineArgs": "Exec /app/Example/id /appsettings.json AddAdmin REPLACE"
     },
     "Create Notes": {
       "commandName": "Docker",
@@ -128,7 +128,7 @@
     },
     "Exec Notes AddAdmin": {
       "commandName": "Docker",
-      "commandLineArgs": "Exec /app/Example/notes/appsettings.json AddAdmin REPLACE"
+      "commandLineArgs": "Exec /app/Example/notes /appsettings.json AddAdmin REPLACE"
     }
   }
 }
