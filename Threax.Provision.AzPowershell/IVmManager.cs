@@ -7,6 +7,6 @@ namespace Threax.Provision.AzPowershell
     {
         Task<string> GetPublicIp(string Name);
 
-        Task SetSecurityRuleAccess(string NetworkSecurityGroup, string ResourceGroup, string Name, string Access);
+        Task SetSecurityRuleAccess(string NetworkSecurityGroup, string ResourceGroup, string Name, string Access, string SourceAddressPrefix);
     }
 }

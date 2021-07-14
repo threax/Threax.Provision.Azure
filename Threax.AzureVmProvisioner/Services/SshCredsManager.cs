@@ -35,6 +35,7 @@ namespace Threax.AzureVmProvisioner.Services
         private readonly IPathHelper appFolderFinder;
         private readonly ILogger<SshCredsManager> logger;
         private readonly IOSHandler osHandler;
+        private readonly IMachineIpManager machineIpManager;
         private readonly Lazy<Task<String>> sshHostLookup;
         private readonly Lazy<Task<SshState>> sshStateLoad;
 
@@ -45,7 +46,8 @@ namespace Threax.AzureVmProvisioner.Services
             IVmManager vmManager,
             IPathHelper appFolderFinder,
             ILogger<SshCredsManager> logger,
-            IOSHandler osHandler)
+            IOSHandler osHandler,
+            IMachineIpManager machineIpManager)
         {
             this.config = config;
             this.keyVaultManager = keyVaultManager;
@@ -55,7 +57,7 @@ namespace Threax.AzureVmProvisioner.Services
             this.appFolderFinder = appFolderFinder;
             this.logger = logger;
             this.osHandler = osHandler;
-
+            this.machineIpManager = machineIpManager;
             sshHostLookup = new Lazy<Task<string>>(() => vmManager.GetPublicIp(config.PublicIpName));
             sshStateLoad = new Lazy<Task<SshState>>(() => LoadSshState());
         }
@@ -86,7 +88,7 @@ namespace Threax.AzureVmProvisioner.Services
                 }
                 try
                 {
-                    Task.Run(() => vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Deny")).GetAwaiter().GetResult();
+                    Task.Run(() => vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Deny", "*")).GetAwaiter().GetResult();
                 }
                 catch (Exception ex)
                 {
@@ -210,7 +212,8 @@ namespace Threax.AzureVmProvisioner.Services
         public async Task SaveSshKnownHostsSecret()
         {
             var sshHost = await sshHostLookup.Value;
-            await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow");
+            var ip = await machineIpManager.GetExternalIp();
+            await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow", ip);
             String key;
             int retry = 0;
             do
@@ -248,7 +251,8 @@ namespace Threax.AzureVmProvisioner.Services
 
         private async Task<SshState> LoadSshState()
         {
-            await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow");
+            var ip = await machineIpManager.GetExternalIp();
+            await vmManager.SetSecurityRuleAccess(config.NsgName, config.ResourceGroup, SshRuleName, "Allow", ip);
             var sshKeyFolder = Path.Combine(appFolderFinder.AppUserFolder, "sshkeys");
             if (!Directory.Exists(sshKeyFolder))
             {
