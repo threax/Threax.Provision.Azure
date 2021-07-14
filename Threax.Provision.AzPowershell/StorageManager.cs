@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Threax.ProcessHelper;
 
@@ -23,10 +25,17 @@ namespace Threax.Provision.AzPowershell
 
             var error = $"Error getting storage account key for '{AccountName}' in Resource Group '{ResourceGroupName}'.";
 
-            var result = await shellRunner.RunProcessAsync(pwsh,
+            var result = await shellRunner.RunProcessAsync<List<AccessKeyInfo>>(pwsh,
                 invalidExitCodeMessage: error);
 
-            return result?.ToString() ?? throw new InvalidOperationException(error);
+            var key1 = result.First();
+
+            return key1.Value ?? throw new InvalidOperationException(error);
+        }
+        class AccessKeyInfo
+        {
+            public string Value { get; set; }
         }
     }
+
 }

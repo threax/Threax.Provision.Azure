@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using Threax.Azure.Abstractions;
 using Threax.AzureVmProvisioner.ArmTemplates.StorageAccount;
 using Threax.Provision.AzPowershell;
 
@@ -31,7 +32,7 @@ namespace Threax.AzureVmProvisioner.Controller
 
             var resource = resources.Storage;
 
-            if(resource == null)
+            if (resource == null)
             {
                 return;
             }
@@ -43,9 +44,15 @@ namespace Threax.AzureVmProvisioner.Controller
             var storage = new ArmStorageAccount(azureStorageConfig.StorageAccount, envConfig.Location);
             await armTemplateManager.ResourceGroupDeployment(envConfig.ResourceGroup, storage);
 
-            if (!String.IsNullOrWhiteSpace(resource.AccessKeySecretName))
+            await SetupConnectionString(envConfig, azureKeyVaultConfig, azureStorageConfig, resource.AccessKeySecretName);
+            await SetupConnectionString(envConfig, azureKeyVaultConfig, azureStorageConfig, resource.ToolsAccessKeySecretName);
+        }
+
+        private async Task SetupConnectionString(EnvironmentConfiguration envConfig, AzureKeyVaultConfig azureKeyVaultConfig, AzureStorageConfig azureStorageConfig, string key)
+        {
+            if (!String.IsNullOrWhiteSpace(key))
             {
-                logger.LogInformation($"Setting up storage connection string '{resource.AccessKeySecretName}' in Key Vault '{azureKeyVaultConfig.VaultName}'.");
+                logger.LogInformation($"Setting up storage connection string '{key}' in Key Vault '{azureKeyVaultConfig.VaultName}'.");
 
                 await keyVaultAccessManager.Unlock(azureKeyVaultConfig.VaultName, envConfig.UserId);
 
@@ -57,7 +64,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 }
 
                 //Need to double check format here, assuming key is valid for now
-                await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, resource.AccessKeySecretName, accessKey);
+                await keyVaultManager.SetSecret(azureKeyVaultConfig.VaultName, key, accessKey);
             }
         }
     }

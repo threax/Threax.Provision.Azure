@@ -12,5 +12,10 @@ namespace Threax.AzureVmProvisioner.Resources
         /// The name of the secret to create for the storage account access key.
         /// </summary>
         public String AccessKeySecretName { get; set; }
+
+        /// <summary>
+        /// The name of the secret to create for the storage account access key.
+        /// </summary>
+        public String ToolsAccessKeySecretName { get; set; }
     }
 }
