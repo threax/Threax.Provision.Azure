@@ -35,13 +35,6 @@ namespace Threax.AzureVmProvisioner.Controller
 
             Logger.LogInformation($"Managing external secrets.");
 
-            if(azureKeyVaultConfig?.VaultName != null)
-            {
-                await KeyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.UserId);
-            }
-
-            await KeyVaultManager.UnlockSecrets(envConfig.ExternalKeyVaultName, envConfig.UserId);
-
             foreach (var externalSecret in resources.ExternalSecrets)
             {
                 Logger.LogInformation($"Copying secret '{externalSecret.Source}' to '{externalSecret.Destination}' of type '{externalSecret.Type}'");

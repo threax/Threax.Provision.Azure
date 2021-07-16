@@ -34,8 +34,6 @@ namespace Threax.AzureVmProvisioner.Controller
                 throw new InvalidOperationException($"You must create a key vault named '{envConfig.ExternalKeyVaultName}' before getting a ssl cert. CreateCommon will do this for you.");
             }
 
-            var keyVaultUnlockTask = KeyVaultManager.UnlockSecrets(envConfig.ExternalKeyVaultName, envConfig.UserId);
-
             var baseUrl = envConfig.BaseUrl ?? throw new InvalidOperationException($"You must include a '{nameof(envConfig.BaseUrl)}' property when making ssl certificates.");
             var commonName = $"*.{baseUrl}";
             var email = envConfig.SslEmail ?? throw new InvalidOperationException($"You must include a '{nameof(envConfig.SslEmail)}' property when making ssl certificates.");
@@ -89,7 +87,6 @@ namespace Threax.AzureVmProvisioner.Controller
                 var privateKey = File.ReadAllText(privateKeyPath);
 
                 //Copy certs to key vaults
-                await keyVaultUnlockTask;
                 await Task.WhenAll
                 (
                     KeyVaultManager.SetSecret(envConfig.ExternalKeyVaultName, envConfig.SslPublicKeyName, publicKey),
