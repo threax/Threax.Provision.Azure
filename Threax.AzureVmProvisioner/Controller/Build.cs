@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Threax.ProcessHelper;
@@ -16,10 +17,10 @@ namespace Threax.AzureVmProvisioner.Controller
     record Build
     (
         ILogger<Build> logger, 
-        IShellRunner shellRunner
+        IProcessRunner processRunner
     ) : IBuild
     {
-        public async Task Run(Configuration config)
+        public Task Run(Configuration config)
         {
             var buildConfig = config.Build;
 
@@ -29,30 +30,37 @@ namespace Threax.AzureVmProvisioner.Controller
             var buildTag = buildConfig.GetBuildTag();
             var currentTag = buildConfig.GetCurrentTag();
 
-            var tag1 = $"{image}:{buildTag}";
-            var tag2 = $"{image}:{currentTag}";
+            var processStartInfo = new ProcessStartInfo("docker")
+            {
+                ArgumentList =
+                {
+                    "build", context,
+                    "-f", dockerFile,
+                    "-t", $"{image}:{buildTag}",
+                    "-t", $"{image}:{currentTag}",
+                    "--progress=plain"
+                }
+            };
 
-            List<FormattableString> command = new List<FormattableString>(){ $"docker build {context} -f {dockerFile} -t {tag1} -t {tag2} --progress=plain" };
+            processStartInfo.EnvironmentVariables.Add("DOCKER_BUILDKIT", "1");
 
             if (buildConfig.PullAllImages)
             {
-                command.Add($" --pull");
+                processStartInfo.ArgumentList.Add("--pull");
             }
 
             if (buildConfig.Args != null)
             {
                 foreach (var arg in buildConfig.Args)
                 {
-                    var argStr = $"{arg.Key}={arg.Value}";
-                    command.Add($" --build-arg {argStr}");
+                    processStartInfo.ArgumentList.Add("--build-arg");
+                    processStartInfo.ArgumentList.Add($"{arg.Key}={arg.Value}");
                 }
             }
 
-            var exitCode = await shellRunner.RunProcessGetExitAsync(command);
-            if (exitCode != 0)
-            {
-                throw new InvalidOperationException("An error occured during the docker build.");
-            }
+            processRunner.Run(processStartInfo);
+
+            return Task.CompletedTask;
         }
     }
 }
