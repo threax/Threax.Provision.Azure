@@ -39,7 +39,6 @@ namespace Threax.AzureVmProvisioner.Controller
                 if (idReg != null)
                 {
                     logger.LogInformation($"Registering app '{resourceConfiguration.Compute.Name}' in id server on path '{idReg.IdServerPath}'.");
-                    await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.UserId);
                     switch (idReg.Type)
                     {
                         case IdServerRegistrationType.None:

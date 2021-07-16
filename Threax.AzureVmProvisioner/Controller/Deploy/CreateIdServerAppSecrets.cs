@@ -35,7 +35,6 @@ namespace Threax.AzureVmProvisioner.Controller
             if (idReg != null)
             {
                 logger.LogInformation($"Configuring id server secrets for '{resourceConfiguration.Compute.Name}' in vault '{azureKeyVaultConfig.VaultName}' and in id server.");
-                await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.UserId);
                 switch (idReg.Type)
                 {
                     case IdServerRegistrationType.None:

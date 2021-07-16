@@ -1,3 +1,7 @@
+Param(
+    [Parameter(Mandatory=$false)] [String] $dockerHost = "localhost:5000"
+)
+
 $scriptPath = Split-Path $script:MyInvocation.MyCommand.Path
 
-docker build $scriptPath -f Threax.AzureVmProvisioner/Dockerfile -t localhost:5000/threax/azurevmprovisioner:1.0 --progress plain
+docker build $scriptPath -f "$scriptPath/Threax.AzureVmProvisioner/Dockerfile" -t "$dockerHost/threax/azurevmprovisioner" --progress plain

@@ -34,7 +34,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 //Allow AzDo user in the key vault if one is set.
                 if (envConfig.AzDoUser != null)
                 {
-                    await keyVaultManager.UnlockSecretsRead(azureKeyVaultConfig.VaultName, envConfig.AzDoUser.Value);
+                    await keyVaultManager.UnlockSecrets(azureKeyVaultConfig.VaultName, envConfig.AzDoUser.Value);
                 }
             }
         }
