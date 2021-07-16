@@ -288,8 +288,10 @@ namespace Threax.AzureVmProvisioner.Services
             File.WriteAllText(publicKeyFile, publicKey);
             File.WriteAllText(privateKeyFile, privateKey);
 
-            osHandler.SetPermissions(publicKeyFile, "root", "root");
-            osHandler.SetPermissions(privateKeyFile, "root", "root");
+            var user = osHandler.GetUser();
+            var group = osHandler.GetGroup();
+            osHandler.SetPermissions(publicKeyFile, user, group);
+            osHandler.SetPermissions(privateKeyFile, user, group);
 
             var creds = await credentialLookup.GetCredentials(config.InfraKeyVaultName, config.VmAdminBaseKey);
             var vmUser = creds.User;

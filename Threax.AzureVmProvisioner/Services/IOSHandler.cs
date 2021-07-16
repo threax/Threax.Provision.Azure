@@ -9,6 +9,10 @@ namespace Threax.AzureVmProvisioner.Services
     /// </summary>
     public interface IOSHandler
     {
+        public string GetUser();
+
+        public string GetGroup();
+
         /// <summary>
         /// Fix the path if needed. This is used for windows to replace c:/thedir with /c/thedir. On linux it will return the original string.
         /// </summary>

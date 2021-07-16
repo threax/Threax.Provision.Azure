@@ -6,6 +6,15 @@ namespace Threax.AzureVmProvisioner.Services
 {
     public class OSHandlerWindows : IOSHandler
     {
+        public string GetUser()
+        {
+            return "";
+        }
+
+        public string GetGroup()
+        {
+            return "";
+        }
         public string CreateDockerPath(string path)
         {
             return "/" + path.Replace("\\", "/").Remove(1, 1);

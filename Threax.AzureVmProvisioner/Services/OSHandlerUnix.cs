@@ -1,22 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Threax.ProcessHelper;
+using Threax.ProcessHelper.Pwsh;
 
 namespace Threax.AzureVmProvisioner.Services
 {
     public class OSHandlerUnix : IOSHandler
     {
         private readonly IProcessRunner processRunner;
+        private readonly IPowershellCoreRunner powershellCoreRunner;
 
-        public OSHandlerUnix(IProcessRunner processRunner)
+        public OSHandlerUnix(IProcessRunner processRunner, IPowershellCoreRunner powershellCoreRunner)
         {
             this.processRunner = processRunner;
+            this.powershellCoreRunner = powershellCoreRunner;
         }
 
         public string CreateDockerPath(string path)
         {
             return path;
+        }
+
+        public string GetUser()
+        {
+            var user = powershellCoreRunner.RunProcess<String>($"id -un | ConvertTo-Json -Depth 1");
+            return user;
+        }
+
+        public string GetGroup()
+        {
+            var group = powershellCoreRunner.RunProcess<String>($"id -gn | ConvertTo-Json -Depth 1");
+            return group;
         }
 
         public void SetPermissions(string path, string user, string group)

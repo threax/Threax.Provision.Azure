@@ -11,6 +11,7 @@ using Threax.AzureVmProvisioner.Controller;
 using Threax.AzureVmProvisioner.Services;
 using Threax.ConsoleApp;
 using Threax.ProcessHelper;
+using Threax.ProcessHelper.Pwsh;
 
 namespace Threax.AzureVmProvisioner
 {
@@ -66,7 +67,7 @@ namespace Threax.AzureVmProvisioner
                     {
                         return new OSHandlerWindows();
                     }
-                    return new OSHandlerUnix(s.GetRequiredService<IProcessRunner>());
+                    return new OSHandlerUnix(s.GetRequiredService<IProcessRunner>(), s.GetRequiredService<IPowershellCoreRunner>());
                 });
 
                 services.AddThreaxProcessHelper();
