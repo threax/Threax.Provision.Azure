@@ -42,17 +42,17 @@ namespace Threax.AzureVmProvisioner.Services
 
             //This is needed on linux, but for now the permissions are breaking stuff
 
-            //int exitCode;
-            //exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("sudo") { ArgumentList = { "chown", "-R", $"{user}:{group}", path } });
-            //if (exitCode != 0)
-            //{
-            //    throw new InvalidOperationException("An error occured during the chown.");
-            //}
-            //exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("sudo") { ArgumentList = { "chmod", "-R", "700", path } });
-            //if (exitCode != 0)
-            //{
-            //    throw new InvalidOperationException("An error occured during the chmod.");
-            //}
+            int exitCode;
+            exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("chown") { ArgumentList = {"-R", $"{user}:{group}", path } });
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException("An error occured during the chown.");
+            }
+            exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("chmod") { ArgumentList = { "-R", "700", path } });
+            if (exitCode != 0)
+            {
+                throw new InvalidOperationException("An error occured during the chmod.");
+            }
         }
 
         public void MakeExecutable(string path)
