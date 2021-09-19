@@ -74,8 +74,10 @@ namespace Threax.AzureVmProvisioner.Controller
                 var json = File.ReadAllText(certInfoFile);
                 dynamic data = JObject.Parse(json);
 
+                Logger.LogInformation("Create a txt record in your dns.");
                 Logger.LogInformation($"Certificate lookup url is '{data.url}'");
                 Logger.LogInformation($"Certificate validation '{data.validation}'");
+                Logger.LogInformation("Please wait, this can potentially take a little while. There is a log file called watch-log that can be viewed.");
 
                 await certTask;
 
@@ -85,6 +87,8 @@ namespace Threax.AzureVmProvisioner.Controller
 
                 var publicKey = File.ReadAllText(publicKeyPath);
                 var privateKey = File.ReadAllText(privateKeyPath);
+
+                Logger.LogInformation($"Copying public key '{envConfig.SslPublicKeyName}' and private key '{envConfig.SslPrivateKeyName}' to '{envConfig.ExternalKeyVaultName}'");
 
                 //Copy certs to key vaults
                 await Task.WhenAll
