@@ -11,8 +11,8 @@
       "commandLineArgs": "CreateWorkVolumes"
     },
     "Login": {
-      "commandName": "Docker",
-      "commandLineArgs": "Login /app/Example /env.json"
+      "commandName": "Project",
+      "commandLineArgs": "Login $(MSBuildProjectDirectory)/Example /env.json"
     },
     "Destroy Volumes": {
       "commandName": "Project",
@@ -129,6 +129,10 @@
     "Exec Notes AddAdmin": {
       "commandName": "Docker",
       "commandLineArgs": "Exec /app/Example/notes /appsettings.json AddAdmin REPLACE"
+    },
+    "ConnectSsh": {
+      "commandName": "Project",
+      "commandLineArgs": "ConnectSsh $(MSBuildProjectDirectory)/Example /env.json"
     }
   }
 }

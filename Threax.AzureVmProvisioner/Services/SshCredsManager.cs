@@ -18,6 +18,7 @@ namespace Threax.AzureVmProvisioner.Services
         void Dispose();
         Task<string> LoadPublicKey();
         Task<int> RunSshCommand(string command);
+        Task OpenSshShell();
         Task SaveSshKnownHostsSecret();
     }
 
@@ -172,6 +173,22 @@ namespace Threax.AzureVmProvisioner.Services
             var sshState = await sshStateLoad.Value;
             var sshConnection = $"{sshState.vmUser}@{sshHost}";
             return await shellRunner.RunProcessGetExitAsync($"ssh -i {sshState.privateKeyFile} -t {sshConnection} {command}");
+        }
+
+        public async Task OpenSshShell()
+        {
+            var sshHost = await sshHostLookup.Value;
+            var sshState = await sshStateLoad.Value;
+            var sshConnection = $"{sshState.vmUser}@{sshHost}";
+            var startInfo = new ProcessStartInfo("ssh") { ArgumentList = { "-i", sshState.privateKeyFile, "-t", sshConnection } };
+            startInfo.RedirectStandardOutput = false;
+            startInfo.RedirectStandardError = false;
+            startInfo.UseShellExecute = false;
+            startInfo.CreateNoWindow = false;
+            using (Process process = Process.Start(startInfo))
+            {
+                process.WaitForExit();
+            }
         }
 
         public async Task CopyStringToSshFile(string input, string dest)
