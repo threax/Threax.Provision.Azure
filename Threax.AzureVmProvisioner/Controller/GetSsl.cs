@@ -43,6 +43,7 @@ namespace Threax.AzureVmProvisioner.Controller
             var certTempPath = Path.GetFullPath(Path.Combine(path, ".files", $"cert_{time}"));
             if (!Directory.Exists(certTempPath))
             {
+                Logger.LogInformation($"Creating certbot temp dir '{certTempPath}'");
                 Directory.CreateDirectory(certTempPath);
             }
 
@@ -51,33 +52,37 @@ namespace Threax.AzureVmProvisioner.Controller
                 //Get cert with certbot container
                 //docker run -it --rm -v {certTempPath}:/etc/letsencrypt certbot/certbot
                 var authHookPath = Path.Combine(Path.GetDirectoryName(this.GetType().Assembly.Location), "Services", "WatchCert.sh");
-                var authHookTempPath = Path.Combine(certTempPath, "auth-hook.sh");
-                var script = File.ReadAllText(authHookPath);
-                var certInfoFile = Path.Combine(certTempPath, "CertInfo.json");
-                script = script.Replace("REPLACE_OUT_FILE", certInfoFile);
-                File.WriteAllText(authHookTempPath, script);
-                OSHandler.MakeExecutable(authHookTempPath);
-                
-                //"--staging --server https://acme-staging-v02.api.letsencrypt.org/directory";
-                var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                //var authHookTempPath = Path.Combine(certTempPath, "auth-hook.sh");
+                //var script = File.ReadAllText(authHookPath);
+                //var certInfoFile = Path.Combine(certTempPath, "CertInfo.json");
+                //script = script.Replace("REPLACE_OUT_FILE", certInfoFile);
+                //Logger.LogInformation($"Writing certbot script to '{authHookTempPath}'");
+                //File.WriteAllText(authHookTempPath, script);
+                //OSHandler.MakeExecutable(authHookTempPath);
 
-                var timeout = 10;
-                while (!File.Exists(certInfoFile))
-                {
-                    await Task.Delay(300);
-                    if(--timeout < 0)
-                    {
-                        throw new InvalidOperationException($"Could not find file '{certInfoFile}' that the hook script should have created, but didn't.");
-                    }
-                }
+                Logger.LogInformation("Use the following command to check the dns.");
+                Logger.LogInformation($"Resolve-DnsName _acme-challenge.smofreight.com. -Type TXT -Server 1.1.1.1");
+                //var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                //var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
+                var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
 
-                var json = File.ReadAllText(certInfoFile);
-                dynamic data = JObject.Parse(json);
+                //var timeout = 10;
+                //while (!File.Exists(certInfoFile))
+                //{
+                //    await Task.Delay(300);
+                //    if(--timeout < 0)
+                //    {
+                //        throw new InvalidOperationException($"Could not find file '{certInfoFile}' that the hook script should have created, but didn't.");
+                //    }
+                //}
 
-                Logger.LogInformation("Create a txt record in your dns.");
-                Logger.LogInformation($"Certificate lookup url is '{data.url}'");
-                Logger.LogInformation($"Certificate validation '{data.validation}'");
-                Logger.LogInformation("Please wait, this can potentially take a little while. There is a log file called watch-log that can be viewed.");
+                //var json = File.ReadAllText(certInfoFile);
+                //dynamic data = JObject.Parse(json);
+
+                //Logger.LogInformation("Create a txt record in your dns.");
+                //Logger.LogInformation($"Certificate lookup url is '{data.url}'");
+                //Logger.LogInformation($"Certificate validation '{data.validation}'");
+                //Logger.LogInformation("Please wait, this can potentially take a little while. There is a log file called watch-log that can be viewed.");
 
                 await certTask;
 

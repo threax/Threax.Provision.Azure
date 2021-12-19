@@ -57,7 +57,7 @@ namespace Threax.AzureVmProvisioner.Services
 
         public void MakeExecutable(string path)
         {
-            var exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("sudo") { ArgumentList = { "chmod", "+x", path } });
+            var exitCode = this.processRunner.Run(new System.Diagnostics.ProcessStartInfo("chmod") { ArgumentList = { "+x", path } });
             if (exitCode != 0)
             {
                 throw new InvalidOperationException("An error occured during the chmod.");
