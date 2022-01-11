@@ -61,7 +61,7 @@ namespace Threax.AzureVmProvisioner.Controller
                 //OSHandler.MakeExecutable(authHookTempPath);
 
                 Logger.LogInformation("Use the following command to check the dns.");
-                Logger.LogInformation($"Resolve-DnsName _acme-challenge.smofreight.com. -Type TXT -Server 1.1.1.1");
+                Logger.LogInformation($"Resolve-DnsName _acme-challenge.{baseUrl}. -Type TXT -Server 1.1.1.1");
                 //var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --staging --server https://acme-staging-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
                 //var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --manual-auth-hook {authHookTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
                 var certTask = ShellRunner.RunProcessVoidAsync($"certbot certonly --server https://acme-v02.api.letsencrypt.org/directory --manual --config-dir {certTempPath} --preferred-challenges dns --agree-tos --manual-public-ip-logging-ok --no-eff-email --email {email} -d {commonName}");
