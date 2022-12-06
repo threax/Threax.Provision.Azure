@@ -7,12 +7,13 @@ RUN apt-get update && apt-get install -y curl
 RUN curl -sSL https://get.docker.com/ | sh
 
 # Install PowerShell
-RUN apt-get update
-RUN apt-get install -y wget apt-transport-https software-properties-common
-RUN wget -q https://packages.microsoft.com/config/ubuntu/16.04/packages-microsoft-prod.deb
-RUN dpkg -i packages-microsoft-prod.deb
-RUN apt-get update
-RUN apt-get install -y powershell
+# Rollback and lock on to 7.2.7 due to issues reading public ip
+# https://github.com/Azure/azure-powershell/issues/18721
+RUN curl -L -o /tmp/powershell.tar.gz https://github.com/PowerShell/PowerShell/releases/download/v7.2.7/powershell-7.2.7-linux-x64.tar.gz
+RUN mkdir -p /opt/microsoft/powershell/7
+RUN tar zxf /tmp/powershell.tar.gz -C /opt/microsoft/powershell/7
+RUN chmod +x /opt/microsoft/powershell/7/pwsh
+RUN ln -s /opt/microsoft/powershell/7/pwsh /usr/bin/pwsh
 
 #Install Az Powershell
 RUN pwsh -c Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force -RequiredVersion 6.0.0
