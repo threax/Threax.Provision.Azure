@@ -7,10 +7,7 @@ Param(
 
 $scriptPath = Split-Path $script:MyInvocation.MyCommand.Path
 
-$scriptPath = $(wsl wslpath -a "'$scriptPath'")
-$path = $(wsl wslpath -a "'$path'")
-
-wsl sudo docker run `
+docker run `
 -it `
 --rm `
 -v /var/run/docker.sock:/var/run/docker.sock `
